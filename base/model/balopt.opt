@@ -124,7 +124,7 @@ XINVESTSTART= 2035;
 *overall control variable HEATTRANS must be 'yes' if any of the other heat trans controls are.
 
 * Permit heat transmission between areas.
-$setglobal HEATTRANS YES
+$setglobal HEATTRANS
 *!option yes
 
 * Permit heat transmission investments between areas.
@@ -153,6 +153,12 @@ $setglobal INDIVUSERS YES
 * Include the possibility to shift exogenous heat demand between technology groups.
 $setglobal GROUP_DEMAND_SHIFT 
 *!option yes
+
+* Include the investment in heat saving generation technologies
+* Technologies are added in the normal GDATA, and applied to _IDVU_SPACEHEATING and DH areas
+$setglobal GHEATSAVING
+*!option yes
+
 *-----------------END: INDIVIDUAL USERS--------------------------------------------------------------
 
 * Include seasonal variation of heat pump's COP. If not activated, heat pumps will have a constant COP during the year.
@@ -333,7 +339,7 @@ XH2INVESTSTART= 2030;
 $setglobal ES_H2TRANS 
 
 * Allows import of Hydrogen from 3rd countries outside Balmorel
-$Setglobal IMPORT_H2 YES
+$Setglobal IMPORT_H2
 *!option yes
 
 * Allows flexible demand of H2 in regions (set ratio of flexible demand in HYDROGEN_FLEXDH2 with the scalar THETA_FLEX_DH2)
@@ -468,11 +474,11 @@ $setglobal LIFETIME_DECOM_EXO_G  YES
 *!option yes
 
 * Adds Exogenous capacities can be decommissioned based on their profitability:
-$setglobal ECONOMIC_DECOM_EXO_G    yes
+$setglobal ECONOMIC_DECOM_EXO_G
 *!option yes
 
 * Adds Endogenous decommissioned exogenous capacities can be brought back to the energy system. To be combined with the other decommissioning options:
-$setglobal REVERT_DECOM_EXO_G   yes
+$setglobal REVERT_DECOM_EXO_G
 *!option yes
 *--------END OF ENDOGENOUS CAPACITIES-----
 *-----------------------End of TECHNOLOGY DECOMMISSIONING--------------------------------------------------------
