@@ -29,12 +29,17 @@ QMINFLOW_A
 QMINFLOW_R
 QMINFLOW_C
 
-*$ifi %inv%==yes       QPROCKAPACCUMNET        !! Has weakness - but used anyway
+$ifi %inv%==yes       QPROCKAPACCUMNET
 $ifi %inv%==yes       QPROCKAP_UP
 $ifi %inv%==yes       QSTOVOLTLIM_T
 $ifi %inv%==yes       QSTOVOLTLIM
 $ifi %inv%==yes       QPROCKAUP_SCALE1
 $ifi %inv%==yes       QPROCKAUP_SCALE2
 $ifi %inv%==yes       QPROCKAP_DEC
+
+*** Investments in transport capacity
+$ifi %inv%==yes       QPROCEXIMKAPACCUMNET
+$ifi %inv%==yes       QPROCEXIMKAP
+$ifi %inv%==yes       QPROCEXIMKAP_SYMMETRY  
 
 $ifi %APKNDISC%==yes  QAPKNDISCEQUALCONT
