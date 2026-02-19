@@ -101,15 +101,15 @@ $if not EXIST '../data/OPTIFLOW_PROC.inc' $INCLUDE '../../base/data/OPTIFLOW_PRO
 
 ALIAS (PROC,IPROC,IPROCFROM,IPROCTO,IPROCFROM2,IPROCTO2,IPROCABROAD); !!IPROCABROAD ?
 
-* Indholdet i denne kan garanteres afledes af PROCPAR nedenfor, lige nu håndlaver vi den.
-* Men i øvrigt er det formentlig sikrere (ift. bruger) at definere eksplicit her. Bør i øvrigt checkes i errorcode. TODO/done?
+* Indholdet i denne kan garanteres afledes af PROCPAR nedenfor, lige nu hï¿½ndlaver vi den.
+* Men i ï¿½vrigt er det formentlig sikrere (ift. bruger) at definere eksplicit her. Bï¿½r i ï¿½vrigt checkes i errorcode. TODO/done?
 SET PROCSOURCE(PROC) "Source PROC (no flow entering it)" %semislash%
 $if     EXIST '../data/OPTIFLOW_PROCSOURCE.inc' $INCLUDE         '../data/OPTIFLOW_PROCSOURCE.inc';
 $if not EXIST '../data/OPTIFLOW_PROCSOURCE.inc' $INCLUDE '../../base/data/OPTIFLOW_PROCSOURCE.inc';
 %semislash%;
 
-* Indholdet i denne kan garanteres afledes af PROCPAR nedenfor, lige nu håndlaver vi den.
-* Men i øvrigt er det formentlig sikrere (ift. bruger) at definere eksplicit her. Bør i øvrigt checkes i errorcode. TODO/done?
+* Indholdet i denne kan garanteres afledes af PROCPAR nedenfor, lige nu hï¿½ndlaver vi den.
+* Men i ï¿½vrigt er det formentlig sikrere (ift. bruger) at definere eksplicit her. Bï¿½r i ï¿½vrigt checkes i errorcode. TODO/done?
 SET PROCSINK(PROC) "Sink PROC (no flow leaving it)" %semislash%
 $if     EXIST '../data/OPTIFLOW_PROCSINK.inc' $INCLUDE         '../data/OPTIFLOW_PROCSINK.inc';
 $if not EXIST '../data/OPTIFLOW_PROCSINK.inc' $INCLUDE '../../base/data/OPTIFLOW_PROCSINK.inc';
@@ -175,8 +175,10 @@ $ifi %inv%==yes $if     EXIST '../data/OPTIFLOW_APROCKAPNEW.inc' $INCLUDE       
 $ifi %inv%==yes $if not EXIST '../data/OPTIFLOW_APROCKAPNEW.inc' $INCLUDE '../../base/data/OPTIFLOW_APROCKAPNEW.inc';
 $ifi %inv%==yes %semislash%;
 
-$ifi %inv%==yes SET IAPROCKAPNEW(YYY,AAA,PROC) 'Area, Proc where technology may be invested based on APKN and some implicit constraints';
-IAPROCKAPNEW(YYY,IA,PROC) = APROCKAPNEW(YYY,IA,PROC);    !! MORE LATER
+$ifi %inv%==yes SET IAPROCKAPNEW(YYY,AAA,PROC)	'Area, Proc where technology may be invested based on APKN and some implicit constraints';
+$ifi %inv%==yes SET IAPROCKAPNEW_notY(AAA,PROC)	'Same as IAPROCKAPNEW, but not for a year';
+IAPROCKAPNEW(Y,IA,PROC) = APROCKAPNEW(Y,IA,PROC);    !! MORE LATER
+IAPROCKAPNEW_notY(IA,PROC) = SUM(Y,IAPROCKAPNEW(Y,IA,PROC));
 
 
 * NB: for debugging, print and ailing memory nice to have FLOW elements in UPPERCASE og Proc elements in CamelCase.
@@ -201,11 +203,37 @@ $if not EXIST '../data/OPTIFLOW_TRANSDIST.inc' $INCLUDE '../../base/data/OPTIFLO
 %semislash%;
 
 SET ITRANSFROMTO(IAAAE,IAAAI) "Set of Areas that are connected by transport (not necessarily symmetric)";
-ITRANSFROMTO(IAE,IAI)$SUM(PROC,TRANSDIST(PROC,IAE,IAI)) =  YES;
+ITRANSFROMTO(IAE,IAI)$(SUM(PROC,TRANSDIST(PROC,IAE,IAI))) =  YES;
 * Remove diagonal elements :
 ITRANSFROMTO(IA,IA) = NO;
 
+SET ITRANSFROMTOPROC(PROC,IAAAE,IAAAI)	"Set of areas that are connected for transport via process proc";
+ITRANSFROMTOPROC(PROC,IAE,IAI)$(TRANSDIST(PROC,IAE,IAI)) = YES;
+ITRANSFROMTOPROC(PROC,IA,IA) = NO;
 
+
+*** Investments in transport capacity
+
+* Areas with new PROCEXIM investments
+$ifi %inv%==yes ALIAS(AAAOPTIFLOW,IAAAEOPTIFLOW,IAAAIOPTIFLOW);
+$ifi %inv%==yes SET APROCEXIMKAPNEW(YYY,IAAAE,IAAAI,PROC)  'Areas for possible location of new ProcExim capacity';
+$ifi %inv%==yes $if     EXIST '../data/OPTIFLOW_APROCEXIMKAPNEW.inc' $INCLUDE '../data/OPTIFLOW_APROCEXIMKAPNEW.inc';
+$ifi %inv%==yes $if not EXIST '../data/OPTIFLOW_APROCEXIMKAPNEW.inc' $INCLUDE '../../base/data/OPTIFLOW_APROCEXIMKAPNEW.inc';
+$ifi %inv%==yes %semislash%;
+
+$ifi %inv%==yes SET IAPROCEXIMKAPNEW(Y,IAAAE,IAAAI,PROC);	
+$ifi %inv%==yes IAPROCEXIMKAPNEW(Y,IAAAEOPTIFLOW,IAAAIOPTIFLOW,PROC) = APROCEXIMKAPNEW(Y,IAAAEOPTIFLOW,IAAAIOPTIFLOW,PROC)
+$ifi %inv%==yes SET IAPROCEXIMKAPNEW_notY(IAAAE,IAAAI,PROC);
+$ifi %inv%==yes IAPROCEXIMKAPNEW_notY(IAAAEOPTIFLOW,IAAAIOPTIFLOW,PROC) = SUM(Y,IAPROCEXIMKAPNEW(Y,IAAAEOPTIFLOW,IAAAIOPTIFLOW,PROC));
+
+* Existing PROCEXIM capacity
+
+ALIAS(IY402,IY403)
+
+PARAMETER PROCEXIMKAPFX(YYY,IAAAE,IAAAI,PROC) "Existing capacity of PROCEXIM (U/h)" %semislash%
+$if     EXIST '../data/OPTIFLOW_PROCEXIMKAPFX.inc' $INCLUDE         '../data/OPTIFLOW_PROCEXIMKAPFX.inc';
+$if not EXIST '../data/OPTIFLOW_PROCEXIMKAPFX.inc' $INCLUDE '../../base/data/OPTIFLOW_PROCEXIMKAPFX.inc';
+%semislash%;
 
 
 SET PROCDATASET  'Process addons/OptiFlow/data types' %semislash%   !! TODO: what kind of addons/OptiFlow/data? not all, some are  clearly in  procinoutflow
