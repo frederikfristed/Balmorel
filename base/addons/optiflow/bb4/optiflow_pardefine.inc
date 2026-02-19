@@ -246,6 +246,29 @@ $if     EXIST '../data/OPTIFLOW_PROCDATA.inc' $INCLUDE         '../data/OPTIFLOW
 $if not EXIST '../data/OPTIFLOW_PROCDATA.inc' $INCLUDE '../../base/data/OPTIFLOW_PROCDATA.inc';
 %semislash%;
 
+*Parameters for relative cost increase from underwater share
+PARAMETER OPTIFLOW_TRANSSHARE_SUBSEA(PROC,IAAAE,IAAAI)	'Fraction of pipeline length between IAAAE and IAAAI that is underwater'
+$if     EXIST '../data/OPTIFLOW_TRANSSHARE_SUBSEA.inc' $INCLUDE         '../data/OPTIFLOW_TRANSSHARE_SUBSEA.inc';
+$if not EXIST '../data/OPTIFLOW_TRANSSHARE_SUBSEA.inc' $INCLUDE '../../base/data/OPTIFLOW_TRANSSHARE_SUBSEA.inc';
+%semislash%;
+
+*Parameters for relative cost increase from mountainous share
+PARAMETER OPTIFLOW_TRANSSHARE_MOUNTAIN(PROC,IAAAE,IAAAI)	'Fraction of pipeline length between IAAAE and IAAAI in mountainous regions'
+$if     EXIST '../data/OPTIFLOW_TRANSSHARE_MOUNTAIN.inc' $INCLUDE         '../data/OPTIFLOW_TRANSSHARE_MOUNTAIN.inc';
+$if not EXIST '../data/OPTIFLOW_TRANSSHARE_MOUNTAIN.inc' $INCLUDE '../../base/data/OPTIFLOW_TRANSSHARE_MOUNTAIN.inc';
+%semislash%;
+
+*Geography multiplier for electricity transmission lines
+PARAMETER OPTIFLOW_GEOMULT(PROC,IAAAE,IAAAI) 'Relative cost multiplier for electricity lines accounting for underwater and mountainous shares';
+
+OPTIFLOW_GEOMULT(PROC,IAAAE,IAAAI) =
+  + OPTIFLOW_TRANSSHARE_SUBSEA(PROC,IAAAE,IAAAI)      * (SUBSEA_REL_INCR - 1)
+  + OPTIFLOW_TRANSSHARE_MOUNTAIN(PROC,IAAAE,IAAAI)    * (MOUNTAIN_REL_INCR  - 1)
+;
+
+
+
+
 * Capacity is implemented as a bound on a Flow (index 4) that enters or leaves PROC (index 3).
 * The value of IFLOWINOUT determines whether the Flow enters or leaves PROC.
 * Hence, with 'IFLOWINOUT_OUT' the bound will be on the Flow from PROC,
@@ -253,7 +276,7 @@ $if not EXIST '../data/OPTIFLOW_PROCDATA.inc' $INCLUDE '../../base/data/OPTIFLOW
 * The PROC can have only one Flow Bundle. ASSUMPTION   NOT ANYMORE NEEDED
 * Capacity cannot be given for entering Flow with IMANYONE in PROCINOUTFLOW nor for leaving Flow with IONEMANY.
 
-SET IFLOWINOUT "Specifies for PROCKAPFX that if the capacity of Proc (index 3) is set as a bound on entering/leaving Flow from/to Proc (index 4)" / IFLOWINOUT_IN, IFLOWINOUT_OUT /;
+SET IFLOWINOUT "Specifies for PROCKAPFX that if the capacity of Proc (index 3) is set as a bound on entering/leaving Flow from/to Proc (index 4)" / IFLOWINOUT_IN, IFLOWINOUT_OUT, IFLOWINOUT_SYM_INV /;
 
 
 SET  PROCKAPDATA(YYY,PROC,FLOW,IFLOWINOUT)    "Process addons/OptiFlow/data: capacity relative to FLOW and in/out direction"  %semislash%
@@ -261,15 +284,23 @@ $if     EXIST '../data/OPTIFLOW_PROCKAPDATA.inc' $INCLUDE         '../data/OPTIF
 $if not EXIST '../data/OPTIFLOW_PROCKAPDATA.inc' $INCLUDE '../../base/data/OPTIFLOW_PROCKAPDATA.inc';
 %semislash%;
 
+* To ensure that flow restricted by capacity functions properly with accumulating investments, we update the PROCKAPDATA set to not include all combinations.
+* The set should, firstly, only include the years in the simulation, and secondly, not include processes that are not available yet in that year.
+
+SET  IPROCKAPDATA(YYY,PROC,FLOW,IFLOWINOUT)		"Same as PROCKAPDATA, but includes only simulated years, as well as the year an investment is available from";
+*SET  IPROCKAPDATA_V2(YYY,PROC,FLOW,IFLOWINOUT)	"Same as before, for test";
+IPROCKAPDATA(Y,PROC,FLOW,IFLOWINOUT) = PROCKAPDATA(Y,PROC,FLOW,IFLOWINOUT);
 
 
+
+* Create subset of processes that is for the model to invest in, based on if it is in PROCDATA and has investment cost
+$ifi %inv%==yes SET IPROCFIND(PROC) 'Set of processes to be found as investments';
+$ifi %inv%==yes IPROCFIND(PROC)=PROC(PROC)$(PROCDATA(PROC,'PROCKAPVARIABLE') EQ 1);
 
 PARAMETER PROCKAPFX(YYY,AAA,PROC,FLOW,IFLOWINOUT) "Capacity of Process (U/h)" %semislash%
 $if     EXIST '../data/OPTIFLOW_PROCKAPFX.inc' $INCLUDE         '../data/OPTIFLOW_PROCKAPFX.inc';
 $if not EXIST '../data/OPTIFLOW_PROCKAPFX.inc' $INCLUDE '../../base/data/OPTIFLOW_PROCKAPFX.inc';
 %semislash%;
-
-
 
 
 PARAMETER PROCKAPNEWSCALE(PROC) "Capacity of Process (U/h)" %semislash%
@@ -292,7 +323,7 @@ $if not EXIST '../data/OPTIFLOW_PROCKAPDECOM.inc' $INCLUDE '../../base/data/OPTI
 
 
 
-IAPROCKAPNEW(YYY,IA,PROC)$(PROCDATA(PROC,'PROCKAPVARIABLE') EQ 0) = NO;   !! Not needed, is implicit in APROCKAPNEW
+*IAPROCKAPNEW(YYY,IA,PROC)$(PROCDATA(PROC,'PROCKAPVARIABLE') EQ 0) = NO;   !! Not needed, is implicit in APROCKAPNEW
 * TODO: add condition for COMBINATION OF Y AND PROCFROMYEAR  (which may reduce IAPROCKAPNEW).
 
 
@@ -640,6 +671,8 @@ $if     EXIST '../data/OPTIFLOW_RateOfReturn.inc' $INCLUDE         '../data/OPTI
 $if not EXIST '../data/OPTIFLOW_RateOfReturn.inc' $INCLUDE '../../base/data/OPTIFLOW_RateOfReturn.inc';
 %semislash%;
 
+* Annuity calculation
+$ifi %OPTIFLOW%==yes      $include	"../../base/addons/optiflow/bb4/optiflow_annuities.inc";
 
 * ------------------------------------------------------------------------------
 * OBJECTIVES:
