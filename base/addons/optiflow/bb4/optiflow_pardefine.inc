@@ -270,8 +270,6 @@ OPTIFLOW_GEOMULT(PROC,IAAAE,IAAAI) =
 
 
 
-
-
 * Capacity is implemented as a bound on a Flow (index 4) that enters or leaves PROC (index 3).
 * The value of IFLOWINOUT determines whether the Flow enters or leaves PROC.
 * Hence, with 'IFLOWINOUT_OUT' the bound will be on the Flow from PROC,
@@ -711,13 +709,36 @@ $if not EXIST '../data/OPTIFLOW_PROCTECHTYPE.inc' $INCLUDE '../../base/data/OPTI
 
 
 
+* ------------------------------------------------------------------------------
+* LCA:
+* ------------------------------------------------------------------------------
 
 
+* The value of IPROCFLOW_LCA_BASIS determines whether LCA scope emissions are based on:
+* IPROCFLOW_PROC --> Process capacity (annualised based on PROCLIFETIME)
+* IPROCFLOW_FLOWIN --> Feedstock inflow
+* IPROCFLOW_FLOWOUT --> Feedstock outflow
 
+SET IPROCFLOW_LCA_BASIS "The value of IPROCFLOW_LCA_BASIS determines whether LCA scope emissions are based on process capacity, inflow or outflow" / IPROCFLOW_PROC, IPROCFLOW_OUTFLOW /;
 
+SET IMPACT "LCA impact categories"
+/
+ACIDIFICATION
+CLIMATE_CHANGE
+ECOTOXICITY
+EUTROPHICATION
+IONISING_RADIATION
+LAND_USE
+MATERIAL_RESOURCES
+OZONE_DEPLETION
+PARTICULATE_MATTER
+WATER_USE
+/;
 
-
-
+PARAMETER IPROCFLOW_LCA_VALUES(YYY,AAA,PROC,FLOW,IMPACT,IPROCFLOW_LCA_BASIS) "LCA scope emissions coefficients by basis: process capacity, inflow, or outflow"  %semislash%
+$if     EXIST '../data/OPTIFLOW_IPROCFLOW_LCA_VALUES.inc' $INCLUDE         '../data/OPTIFLOW_IPROCFLOW_LCA_VALUES.inc'
+$if not EXIST '../data/OPTIFLOW_IPROCFLOW_LCA_VALUES.inc' $INCLUDE '../../base/data/OPTIFLOW_IPROCFLOW_LCA_VALUES.inc'
+%semislash%
 
 
 
