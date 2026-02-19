@@ -483,6 +483,112 @@ $setglobal REVERT_DECOM_EXO_G
 *--------END OF ENDOGENOUS CAPACITIES-----
 *-----------------------End of TECHNOLOGY DECOMMISSIONING--------------------------------------------------------
 
+*-------------------------------------------------------------------------------
+* OptiFlow model.
+*-------------------------------------------------------------------------------
+
+*** Enable OptiFlow addon. 
+$setglobal OPTIFLOW yes
+*!option yes
+* Enables the OptiFlow model framework.
+
+*** Define investment behaviour
+$setglobal inv yes
+*!option yes
+* Enables endogenous investment decisions in OptiFlow technologies.
+* Required for capacity expansion modelling.
+
+$setglobal APKNdisc
+*!option yes
+* Enables discrete investment sizes for processes (PROC).
+* Useful when technologies must be built in fixed unit sizes.
+
+$setglobal solveOptiFlowmip
+*!option yes
+* Solves OptiFlow as a mixed-integer program (MIP).
+* Required when discrete investment sizes are enabled.
+
+
+*** Integration between Balmorel and OptiFlow
+$setglobal baloptfuelbridge yes
+*!option yes
+* Connects biomass use between Balmorel and OptiFlow.
+* Sets Balmorel biomass availability to zero where handled in OptiFlow.
+
+$setglobal baloptgasbridge yes
+*!option yes
+* Connects biogas production in OptiFlow to Balmorel.
+* Transfers biogas supply into Balmorel energy balance.
+
+$setglobal baloptCCU yes
+*!option yes
+* Connects captured CO₂ in Balmorel to CO₂ utilisation in OptiFlow.
+* Requires CCS addon to be enabled.
+
+$setglobal baloptCCS yes
+*!option yes
+* Enables investment in CO₂ sequestration infrastructure in OptiFlow.
+* Requires:
+*   - CCS addon enabled
+*   - baloptgasbridge = yes
+
+
+*** Fossil fuel substitution
+$setglobal optiFossils yes
+*!option no
+* Allows purchase of fossil fuel substitutes at fixed cost and emissions. 
+
+
+*** Onboard carbon capture (OCC)
+$setglobal optiOCC yes
+*!option yes
+* Enables onboard carbon capture (OCC) and related CO₂ sequestration.
+* Requires CCS addon and gas bridge.
+
+*** Life cycle analysis (IC=climate change)
+$setglobal optiLCA
+*!option yes
+* Adds life cycle emissions from construction and operation of OptiFlow assets to the CO2 balance,
+* but only if impact data for the climate change category is available.
+* Intended use is to include embodied and operational LCA emissions in system wide CO2 accounting.
+
+*** Numerical robustness and debugging options
+$setglobal addEPStoL
+*!option yes
+* Adds small epsilon values to avoid numerical infeasibility in capacity bounds.
+* Useful when internal process capacity constraints exist.
+
+$setglobal useQNODEslack
+*!option
+* Enables slack variables in QNODE constraints for debugging.
+
+$setglobal useSSBslack
+*!option yes
+* Enables slack variables in subsystem balances.
+
+$setglobal useShareSlack
+*!option yes
+* Enables slack variables in share constraints.
+
+$setglobal uniquesol
+*!option yes
+* Adds quadratic regularisation to objective function.
+* Ensures unique solution. Use only for debugging small systems.
+
+*** Testing and development options
+
+$setglobal singlearea
+*!option yes
+* Restricts model to single-area mode for debugging.
+
+$setglobal addUP
+*!option yes
+* Enables experimental or development features.
+
+*-------------------------------------------------------------------------------
+*Optiflow end
+*-------------------------------------------------------------------------------
+
 
 *-------------------- UNIT COMMITMENT -----------------------------------------------------------
 * overall control variable UnitComm must be 'yes' if any of the other unit commitment controls are:
@@ -538,47 +644,6 @@ $setglobal SEASONALLINKRAMPING
 $setglobal timeaggr
 *!option yes
 
-
-*-------------------------------------------------------------------------------
-* OptiFlow model.
-*-------------------------------------------------------------------------------
-$setglobal OPTIFLOW
-*!option yes
-* Addon APKNdisc: discrete size investments in PROC.
-$setglobal APKNdisc
-*!option yes
-*Investments in Optiflow technologies
-$setglobal inv yes
-*! option yes
-*Model solved as MIP
-$setglobal solveOptiFlowmip
-*! option yes
-
-* Debug possibilities:
-$Setglobal addEPStoL
-*! option yes
-* Not needed if there are no capacity bounds on internal proc
-* It will be needed if there are capacity bounds on some internal proc, therefore add them only in that case (requires some coding, TODO).
-* With such minimal use the infeasibilities will be moved to SOSIBU proc whenever possible.
-$Setglobal useQNODEslack
-*! option
-$Setglobal useSSBslack
-*! option yes
-$Setglobal useShareSlack
-*! option yes
-* Option uniquesol permit to use quadratic terms in QOBJ in order to attain unique solution.
-* Should be used for debug on small systems only.
-$Setglobal uniquesol
-*! option yes
-* Testing ONLY:
-$setglobal singlearea
-*! option yes
-* Testing ONLY:
-$setglobal addUP
-*! option yes
-*-------------------------------------------------------------------------------
-*Optiflow end
-*-------------------------------------------------------------------------------
 
 * In model Balbase4 (BB4) indicate the strategy for relative weighting of years
 $setglobal bb4weighty shareYYY
