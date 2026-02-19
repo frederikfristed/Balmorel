@@ -707,11 +707,11 @@ $if not EXIST '../data/OPTIFLOW_PROCTECHTYPE.inc' $INCLUDE '../../base/data/OPTI
 %semislash%;
 
 
+$ifi not %optiLCA%==yes $goto NOLCA
 
 * ------------------------------------------------------------------------------
 * LCA:
 * ------------------------------------------------------------------------------
-
 
 * The value of IPROCFLOW_LCA_BASIS determines whether LCA scope emissions are based on:
 * IPROCFLOW_PROC --> Process capacity (annualised based on PROCLIFETIME)
@@ -739,7 +739,7 @@ $if     EXIST '../data/OPTIFLOW_IPROCFLOW_LCA_VALUES.inc' $INCLUDE         '../d
 $if not EXIST '../data/OPTIFLOW_IPROCFLOW_LCA_VALUES.inc' $INCLUDE '../../base/data/OPTIFLOW_IPROCFLOW_LCA_VALUES.inc'
 %semislash%
 
-
+$label NOLCA
 
 
 
