@@ -1,0 +1,42 @@
+* File comline.opt
+* This file holds command line parameters for GAMS. For possible parameter seach for Command Line Parameters in the GAMS Documentation (e.g., under The GAMS Call).
+* It is an alternative or supplement to entering these parameters in the command line box (upper right when looking at Balmorel.gms in the IDE).
+* To activate it use the command   pf=aggregatetime_comline.opt   in the command line box.
+* Additional command line parameters may be entered in the command line box or in this file.
+* The below first and last line with Eolonly are mandatory for this layout.
+
+* Obligatory ("Eolonly 1" must be first): --------------------------------------
+Eolonly 1
+* ------------------------------------------------------------------------------
+
+* Pw (PageWidth) controls the width of the Balmorel.lst file. Default under IDE is 80. Possible values are between 72 and 32767:
+pw=950
+
+* Cerr is the maximum number of compile time errors before GAMS stops. 0 (default) means no limit:
+cerr=6
+
+* Errmsg controls the position of error messages in the listing file. Possible values:
+*   0 Place error messages at the end of compiler listing (default)
+*   1 Place error messages immediately following the line with the error
+*   2 Suppress error messages
+errmsg=1
+
+
+* Profile tells GAMS whether to include statement execution time and memory use reporting to the LST file.
+* If Pf is positive a summary report of the ten slowest execution steps will be written to the log and listing files. Possible values:
+*   0 no profiling (default)
+*   1 minimum profiling: execution times for each statement and the number of set elements over which the particular statement is execute
+*   2 profling depth for nested control structures: specific times for statements inside control structures like loops etc.
+Profile=1
+
+
+* DFormat controls use of alternative date formats. Possible values:
+*   0    mm/dd/yy   (month/day/year) (default)
+*   1    dd.mm.yy
+*   2    yy-mm-dd
+DFormat=2
+
+
+* ------------------------------------------------------------------------------
+* Obligatory ("Eolonly 0" must be last): ---------------------------------------
+Eolonly 0
