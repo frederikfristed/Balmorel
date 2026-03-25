@@ -25,5 +25,7 @@ $ifi %ANC_SERV%==yes  $include   "../../base/addons/ancilliary_services/ancillia
 $ifi %BalancingMarket%==yes       $include   "../../base/addons/balancing_market/balancing_market_balbase4.inc";
 $ifi %INDIVUSERS%==yes       $include   "../../base/addons/indivusers/bb4/indivusers_balbase4.inc";
 $ifi %OPTIFLOW%==yes         $include         "../../base/addons/optiflow/bb4/optiflow_balbase4.inc";
+$ifi %CCS%==yes				$include         "../../base/addons/CCS/bb4/CCS_balbase4.inc";
+$ifi %SOVEREIGNTY%==yes  $include   "../../base/addons/sovereignty/bb4/sovereignty_balbase4.inc";
 
 $label endoffile
