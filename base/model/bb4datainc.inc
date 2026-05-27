@@ -460,6 +460,11 @@ $if not EXIST '../data/SUBTECHGROUPKPOT.inc' $INCLUDE '../../base/data/SUBTECHGR
 *------------- Any SUBTECHGROUPKPOT additions for addon to be placed here: ----------------
 $include "../../base/addons/_hooks/subtechgroupkpotadditions.inc"
 
+PARAMETER GROWTHRATE_RENEWABLE(YYY,CCCRRRAAA,TECH_GROUP,SUBTECH_GROUP)    "Capacity growth restriction of variable renewable capacity by geography between investment periods (MW)"   %semislash%
+$if     EXIST '../data/GROWTHRATE_RENEWABLE.inc' $INCLUDE      '../data/GROWTHRATE_RENEWABLE.inc';
+$if not EXIST '../data/GROWTHRATE_RENEWABLE.inc' $INCLUDE '../../base/data/GROWTHRATE_RENEWABLE.inc';
+%semislash%;
+
 
 PARAMETER FKMIN(YYY,CCCRRRAAA,FFF)    "Minimum fuel capacity restricted by geography (MW)"   %semislash%
 $if     EXIST '../data/FKMIN.inc' $INCLUDE      '../data/FKMIN.inc';
@@ -695,7 +700,7 @@ $if     EXIST '../data/XKRATE.inc' $INCLUDE         '../data/XKRATE.inc';
 $if not EXIST '../data/XKRATE.inc' $INCLUDE '../../base/data/XKRATE.inc';
 %semislash%;
 
-PARAMETER XMAXINV(IRRRE,IRRRI)   "Max investment in transmission capacity between two regions for each simulated year (each 5th year)"  %semislash%
+TABLE XMAXINV(YYY,IRRRE,IRRRI)   "Maximum new transmission capacity that can be built in each model period"  %semislash%
 $if     EXIST '../data/XMAXINV.inc' $INCLUDE         '../data/XMAXINV.inc';
 $if not EXIST '../data/XMAXINV.inc' $INCLUDE '../../base/data/XMAXINV.inc';
 %semislash%;

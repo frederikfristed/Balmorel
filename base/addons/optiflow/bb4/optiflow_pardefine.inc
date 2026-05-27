@@ -226,6 +226,10 @@ $ifi %inv%==yes IAPROCEXIMKAPNEW(Y,IAAAEOPTIFLOW,IAAAIOPTIFLOW,PROC) = APROCEXIM
 $ifi %inv%==yes SET IAPROCEXIMKAPNEW_notY(IAAAE,IAAAI,PROC);
 $ifi %inv%==yes IAPROCEXIMKAPNEW_notY(IAAAEOPTIFLOW,IAAAIOPTIFLOW,PROC) = SUM(Y,IAPROCEXIMKAPNEW(Y,IAAAEOPTIFLOW,IAAAIOPTIFLOW,PROC));
 
+$ifi %inv%==yes TABLE VPROCEXIMKAPMAXINV(YYY,IAAAE,IAAAI,PROC) 'Maximum new process-specific transmission capacity that can be built in each model period';
+$ifi %inv%==yes $if     EXIST '../data/OPTIFLOW_VPROCEXIMKAPMAXINV.inc' $INCLUDE '../data/OPTIFLOW_VPROCEXIMKAPMAXINV.inc';
+$ifi %inv%==yes $if not EXIST '../data/OPTIFLOW_VPROCEXIMKAPMAXINV.inc' $INCLUDE '../../base/data/OPTIFLOW_VPROCEXIMKAPMAXINV.inc';
+
 * Existing PROCEXIM capacity
 
 ALIAS(IY402,IY403)
@@ -291,6 +295,11 @@ SET  IPROCKAPDATA(YYY,PROC,FLOW,IFLOWINOUT)		"Same as PROCKAPDATA, but includes 
 *SET  IPROCKAPDATA_V2(YYY,PROC,FLOW,IFLOWINOUT)	"Same as before, for test";
 IPROCKAPDATA(Y,PROC,FLOW,IFLOWINOUT) = PROCKAPDATA(Y,PROC,FLOW,IFLOWINOUT);
 
+
+TABLE VPROCKAPMAXINV(YYY,AAA,PROC) "Maximum new process capacity that can be built in each model period (unit/h)" %semislash%
+$if     EXIST '../data/OPTIFLOW_VPROCKAPMAXINV.inc' $INCLUDE         '../data/OPTIFLOW_VPROCKAPMAXINV.inc';
+$if not EXIST '../data/OPTIFLOW_VPROCKAPMAXINV.inc' $INCLUDE '../../base/data/OPTIFLOW_VPROCKAPMAXINV.inc';
+%semislash%;
 
 
 * Create subset of processes that is for the model to invest in, based on if it is in PROCDATA and has investment cost

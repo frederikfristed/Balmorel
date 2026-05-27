@@ -42,6 +42,9 @@ PARAMETER XH2INVCOST(YYY,IRRRE,IRRRI)  "Investment cost in new H2 transmission c
 PARAMETER XH2INVCOST_NGTOH2(YYY,IRRRE,IRRRI)  "Investment cost in conversion of natural grids to  H2 transmission capacity (Money/MW)";
 * Observe: if INF is entered in XH2INVCOST_NGTOH2, this means that no tranmission capacity can be established between the two associated regions.
 
+TABLE XH2MAXINV(YYY,IRRRE,IRRRI)  "Maximum new hydrogen pipeline capacity that can be built in each model period";
+
+
 PARAMETER XH2COST(IRRRE,IRRRI)  "H2 transmission cost between regions (calculated from exported quantity) (Money/MWh)" ;
 
 PARAMETER XH2LOSS(IRRRE,IRRRI)  "H2 transmission loss between regions (calculated from exported quantity) (share)";

@@ -1227,6 +1227,7 @@ EQUATIONS
    QKSUBTECHGROUPC(Y,C,TECH_GROUP,SUBTECH_GROUP)   "Maximum capacity by year, country and subtechnology group (MW)"
    QKSUBTECHGROUPR(Y,RRR,TECH_GROUP,SUBTECH_GROUP) "Maximum capacity by year, region and subtechnology group (MW)"
    QKSUBTECHGROUPA(Y,AAA,TECH_GROUP,SUBTECH_GROUP) "Maximum capacity by year, area and subtechnology group (MW)"
+   QGROWTHRATE_RENEWABLE(Y,RRR,TECH_GROUP,SUBTECH_GROUP) "Growth rate restriction by region and technology group (MW)"
 
    QGMINFUELC(Y,C,FFF)      "Minimum electricity generation year, country and fuel (MWh)"
    QGMAXFUELC(Y,C,FFF)      "Maximum electricity generation year, country and fuel (MWh)"
@@ -2115,6 +2116,25 @@ $ifi %DECOM%==yes   -VDECOM_EXO_ACCUM(IY411,IA,G)$IGDECOMEXOPOT(IY411,IA,G)
 
 *--- End of Capacity restrictions by Technology Group--------------------------------------------
 
+*--- Capacity growth restrictions by Sub Technology Group--------------------------------------------
+
+QGROWTHRATE_RENEWABLE(IY411,IR,TECH_GROUP,SUBTECH_GROUP)$(SUBTECHGROUPKPOT(IR,TECH_GROUP,SUBTECH_GROUP) AND GROWTHRATE_RENEWABLE(IY411,IR,TECH_GROUP,SUBTECH_GROUP)) ..
+
+  SUM(
+    IAGK_HASORPOT(IY411,IA,G)$(
+      RRRAAA(IR,IA)
+      AND IAGKNY(IY411,IA,G)
+      AND GDATA(G,'GDTECHGROUP') EQ TECH_GROUP_VALUE(TECH_GROUP)
+      AND GDATA(G,'GDSUBTECHGROUP') EQ SUBTECH_GROUP_VALUE(SUBTECH_GROUP)
+    ),
+    VGKN(IY411,IA,G)
+  )
+
+=L=
+
+  GROWTHRATE_RENEWABLE(IY411,IR,TECH_GROUP,SUBTECH_GROUP);
+
+*--- End of Capacity growth restrictions by Sub Technology Group--------------------------------------------
 
 
 *----------- Transmission (MW):------------------------------------------------
@@ -2132,9 +2152,8 @@ QXK_UP(IY411,IRE,IRI,IS3,T)$SUM(Y$(YVALUE(Y) LE YVALUE(IY411)),IXKN(Y,IRE,IRI)).
 $include "../../base/addons/_hooks/qxk_up.inc"
 ;
 
-
-* Put a cap on the maximum accummulated transmission capacity, if a cap is specified
-VXKNACCUMNET.UP(Y,IRRRE,IRRRI)$(XINVCOST(Y,IRRRE,IRRRI) AND XMAXINV(IRRRE,IRRRI))= XMAXINV(IRRRE,IRRRI);
+* Put a cap on transmission investments per model period, if a cap is specified
+VXKN.UP(Y,IRRRE,IRRRI)$(XINVCOST(Y,IRRRE,IRRRI) AND XMAXINV(Y,IRRRE,IRRRI)) = XMAXINV(Y,IRRRE,IRRRI);
 
 
 * Accumulated endogenous transmission investments during present BB4 model -----
@@ -2486,6 +2505,7 @@ $ifi not %TechInvest%==yes $ifi not %DECOM%==yes  $goto NO_TECH_INVESTMENTS_NO_D
                                  QKSUBTECHGROUPC
                                  QKSUBTECHGROUPR
                                  QKSUBTECHGROUPA
+                                 QGROWTHRATE_RENEWABLE
 *--- Fuel potential restrictions ------------------------------------------------
                                  QKEFUELC
                                  QKEFUELR
