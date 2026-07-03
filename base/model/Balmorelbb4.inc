@@ -2595,7 +2595,7 @@ $ifi not exist 'Balmorelbb4.sim'  $include '../../base/model/Balmorelbb4.sim';
 
 *--- Main results calculation -----------------------------------------------
 $ifi %OUTPUT_SUMMARY%==yes $if     EXIST '../../base/output/OUTPUT_SUMMARY.inc' $INCLUDE         '../../base/output/OUTPUT_SUMMARY.inc';
-*$ifi %OUTPUT_SUMMARY%==yes $ifi %OPTIFLOW%==yes $if     EXIST '../../base/output/Optiflow_OutputFile.inc' $INCLUDE         '../../base/output/Optiflow_OutputFile.inc';
+$ifi %OUTPUT_SUMMARY%==yes $ifi %OPTIFLOW%==yes $if     EXIST '../../base/output/Optiflow_OutputFile.inc' $INCLUDE         '../../base/output/Optiflow_OutputFile.inc';
 *--- End of Main results calculation ---------------------------------------
 
 

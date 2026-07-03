@@ -99,7 +99,7 @@ $if     EXIST '../data/OPTIFLOW_PROC.inc' $INCLUDE         '../data/OPTIFLOW_PRO
 $if not EXIST '../data/OPTIFLOW_PROC.inc' $INCLUDE '../../base/data/OPTIFLOW_PROC.inc';
 %semislash%;
 
-ALIAS (PROC,IPROC,IPROCFROM,IPROCTO,IPROCFROM2,IPROCTO2,IPROCABROAD); !!IPROCABROAD ?
+ALIAS (PROC,IPROC,IPROC2,IPROCFROM,IPROCTO,IPROCFROM2,IPROCTO2,IPROCABROAD); !!IPROCABROAD ?
 
 * Indholdet i denne kan garanteres afledes af PROCPAR nedenfor, lige nu h�ndlaver vi den.
 * Men i �vrigt er det formentlig sikrere (ift. bruger) at definere eksplicit her. B�r i �vrigt checkes i errorcode. TODO/done?
@@ -450,6 +450,16 @@ PARAMETER IPROCKAPFXINV_Y(AAA,PROC) "Investments in plants from previous years i
 
 SET IPROCINOUTRELATION "Possible relationships between process inflow and outflow" / IONEONE, IONEMANY, IMANYONE, IONEONEREC /;
 
+Set PROCTECHTYPE(PROC,TECH_GROUP) "Type of technology aggrigated"  %semislash%;
+$if     EXIST '../data/OPTIFLOW_PROCTECHTYPE.inc' $INCLUDE         '../data/OPTIFLOW_PROCTECHTYPE.inc';
+$if not EXIST '../data/OPTIFLOW_PROCTECHTYPE.inc' $INCLUDE '../../base/data/OPTIFLOW_PROCTECHTYPE.inc';
+%semislash%;
+
+
+SET TECH_GROUP_AS_PROC(PROC);
+TECH_GROUP_AS_PROC(PROC) = YES$(SUM(TECH_GROUP$(SAMEAS(PROC,TECH_GROUP)),1));
+%semislash%;
+
 SET FLOWFROMTOPROC(YYY,AAA,IPROCFROM,IPROCTO,FLOW) "FLOW from PROC (index 2) to PROC (index 3)" %semislash%
 $if     EXIST '../data/OPTIFLOW_FLOWFROMTOPROC.inc' $INCLUDE         '../data/OPTIFLOW_FLOWFROMTOPROC.inc';
 $if not EXIST '../data/OPTIFLOW_FLOWFROMTOPROC.inc' $INCLUDE '../../base/data/OPTIFLOW_FLOWFROMTOPROC.inc';
@@ -707,14 +717,6 @@ $if not EXIST '../data/OPTIFLOW_INDICLIMGOAL.inc' $INCLUDE '../../base/data/OPTI
 
 SCALAR IPENALTYQ   "Penalty on violation of equation" / 1e9 /;
 SCALAR ILOUPBOUNDS "Default lower and upper bounds to guard against unbounded solution" /1e10/;
-
-*mason
-
-Set PROCTECHTYPE(PROC,TECH_GROUP) "Type of technology aggrigated"  %semislash%;
-$if     EXIST '../data/OPTIFLOW_PROCTECHTYPE.inc' $INCLUDE         '../data/OPTIFLOW_PROCTECHTYPE.inc';
-$if not EXIST '../data/OPTIFLOW_PROCTECHTYPE.inc' $INCLUDE '../../base/data/OPTIFLOW_PROCTECHTYPE.inc';
-%semislash%;
-
 
 $ifi not %optiLCA%==yes $goto NOLCA
 
