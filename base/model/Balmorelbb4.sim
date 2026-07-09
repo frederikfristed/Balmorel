@@ -249,6 +249,16 @@ $ifi %RollingSeasons%==yes * Redefinition of IHOURSINT for the current set of se
 $ifi %RollingSeasons%==yes IWEIGHSUMS=SUM(IS3, WEIGHT_S(IS3));
 $ifi %RollingSeasons%==yes IHOURSINST(IS3,T)=IOF8760*WEIGHT_S(IS3)*WEIGHT_T(T)/(IWEIGHSUMS*SUM(ITALIAS, WEIGHT_T(ITALIAS)))/IHOURFRAC;
 
+* Helper for QEXPANSION_RENEWABLE: grouped investments in previous modeled year.
+IPREV_VGKN_SUM(Y,IR,TECH_GROUP) = 0;
+IPREV_VGKN_SUM(IY411,IR,TECH_GROUP) =
+  SUM((IY402,IA,G)$(
+      IY411PREVY(IY411,IY402)
+      AND RRRAAA(IR,IA)
+      AND IAGKNY(IY402,IA,G)
+      AND GDATA(G,'GDTECHGROUP') EQ TECH_GROUP_VALUE(TECH_GROUP)
+    ), VGKN.L(IY402,IA,G));
+
 *-------------------------------------------------------------------------------
 * SOLVE
 *-------------------------------------------------------------------------------

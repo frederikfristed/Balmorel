@@ -460,10 +460,14 @@ $if not EXIST '../data/SUBTECHGROUPKPOT.inc' $INCLUDE '../../base/data/SUBTECHGR
 *------------- Any SUBTECHGROUPKPOT additions for addon to be placed here: ----------------
 $include "../../base/addons/_hooks/subtechgroupkpotadditions.inc"
 
-PARAMETER GROWTHRATE_RENEWABLE(YYY,CCCRRRAAA,TECH_GROUP,SUBTECH_GROUP)    "Capacity growth restriction of variable renewable capacity by geography between investment periods (MW)"   %semislash%
-$if     EXIST '../data/GROWTHRATE_RENEWABLE.inc' $INCLUDE      '../data/GROWTHRATE_RENEWABLE.inc';
-$if not EXIST '../data/GROWTHRATE_RENEWABLE.inc' $INCLUDE '../../base/data/GROWTHRATE_RENEWABLE.inc';
+
+SET GROWTHMODE /Y_FIRST_CAP, Y_LIN_ADD, Y_EXP_ADD/;
+
+PARAMETER EXPANSION_RENEWABLE (YYY,RRR,TECH_GROUP,GROWTHMODE)    "Expansion rates for renewable technologies (MW)"   %semislash%
+$if     EXIST '../data/EXPANSION_RENEWABLE.inc' $INCLUDE      '../data/EXPANSION_RENEWABLE.inc';
+$if not EXIST '../data/EXPANSION_RENEWABLE.inc' $INCLUDE '../../base/data/EXPANSION_RENEWABLE.inc';
 %semislash%;
+
 
 
 PARAMETER FKMIN(YYY,CCCRRRAAA,FFF)    "Minimum fuel capacity restricted by geography (MW)"   %semislash%
