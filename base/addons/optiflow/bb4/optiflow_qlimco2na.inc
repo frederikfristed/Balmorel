@@ -11,8 +11,8 @@ $ifi %baloptCCU%==yes -SUM(C,SUM((IA,IPROCFROM,IPROCTO,FLOW)$(ICA(C,IA) AND ICO2
 $label NOCCUS
 
 *Direct and process emissions from fuel use
-- SUM((C, IA, FLOW, IS3, T)$(ICA(C,IA) AND PROC_T('CO2_Emi_Sink')),
-    IHOURSINST(IS3, T) * VFLOWSINK(IY411, IA, 'CO2_Emi_Sink', FLOW, IS3, T)
+- SUM((C, IA, FLOW, IS3, T)$(ICA(C,IA) AND PROC_T('CO2_Sink')),
+    IHOURSINST(IS3, T) * VFLOWSINK(IY411, IA, 'CO2_Sink', FLOW, IS3, T)
 )
 
 *CO2 emissions from transport

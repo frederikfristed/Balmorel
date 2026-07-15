@@ -1,6 +1,6 @@
 * File BalmorelBB4.inc for handling the Balbase4 model in Balmorel.
 * First version 2009(hr) based on DTU Master project by Jesper Felstedt &QHYDROGEN_ Morten Middelboe Pedersen under supervision by Hans Ravn.
-* Present version 20150428(hr), 20150430(Weiming), 20151217(hr), 20160810(hr), 20170419 (Juan and hr).
+* Present version 20150428(hr), 20150430(Weiming), 20151217(hr), 20160810(hr), 20170419 (Juan and hr), 20240624 (Mathias and Ioannis)
 * Thanks to Weiming Xiong, Andreas von Recklinghausen and others for good contributions.
 
 * The model is still under development.
@@ -98,7 +98,7 @@ ALIAS(CCCRRRAAA,CCCRRRAAAALIAS);
 * They correspond in a one-to-one way with the internal sets IGCND, IGBRP etc. below.
 * They should generally not be changed.
 * New technology types may be added only if also code specifying their properties are added.
-ACRONYMS  GCND, GBPR, GEXT, GHOB, GETOH, GHSTO, GESTO, GHSTOS, GESTOS, GHYRS, GHYRR, GWND, GSOLE, GSOLH, GWAVE, GHS;
+ACRONYMS  GCND, GBPR, GEXT, GHOB, GETOH, GHSTO, GESTO, GHSTOS, GESTOS, GHYRS, GHYRR, GWND, GSOLE, GSOLH, GWAVE;
 
 * ACRONYMS for user defined fuels will be given as part of file FFF.inc
 * ACRONYMS for other purposes are defined in ACRONYMS.inc
@@ -177,7 +177,6 @@ SET IGCND(G)               "Condensing technologies";                           
 SET IGBPR(G)               "Back pressure technologies";                        !! Corresponding to acronym GBPR
 SET IGEXT(G)               "Extraction technologies";                           !! Corresponding to acronym GEXT
 SET IGHOB(G)               "Heat-only boilers";                                 !! Corresponding to acronym GHOB
-SET IGHS(G)				   "Heat savings";										!! Corresponding to acronym GHS
 SET IGETOH(G)              "Electric heaters, heatpumps, electrolysis plants";  !! Corresponding to acronym GETOH
 SET IGHSTO(G)              "Intra-seasonal heat storage technologies";          !! Corresponding to acronym GHSTO
 SET IGHSTOS(G)             "Inter-seasonal heat storage technologies";          !! Corresponding to acronym GHSTOS
@@ -190,7 +189,6 @@ SET IGHYRR(G)              "Hydropower run-of-river no reservoir";              
 SET IGWND(G)               "Wind power technologies";                           !! Corresponding to acronym GWND
 SET IGSOLE(G)              "Solar electrical power technologies";               !! Corresponding to acronym GSOLE
 SET IGSOLH(G)              "Solar heat technologies";                           !! Corresponding to acronym GSOLH
-SET IGVRE(G)                            "VRE technologies";
 SET IGWAVE(G)              "Wave power technologies";                           !! Corresponding to acronym GWAVE
 SET IGHH(G)                "Technologies generating heat-only";
 SET IGHHNOSTO(G)           "Technologies generating heat-only, except storage";
@@ -355,7 +353,6 @@ IS33(S,ISALIAS)$((ORD(S) EQ CARD(S)) AND (ORD(ISALIAS) EQ 1)) = YES; !! CIRCULAR
    IGSOLE(G)   = YES$(GDATA(G,'GDTYPE') EQ GSOLE);
    IGSOLH(G)   = YES$(GDATA(G,'GDTYPE') EQ GSOLH);
    IGWAVE(G)   = YES$(GDATA(G,'GDTYPE') EQ GWAVE);
-   IGHS(G)	   = YES$(GDATA(G,'GDTECHGROUP') EQ HEAT_SAVING);
 
 
 * Assignments of IGESTO, IGESTOS, IGHSTO and IGHSTOS may be changed if option stointers has a non-default value.
@@ -405,9 +402,6 @@ $ifi "%stointers%"=="none" IGESTOS(IGESTOS) = NO; IGHSTOS(IGHSTOS) = NO;
                          +IGWAVE(G)
                          +IGESTO(G)
                          +IGESTOS(G);
-
-   IGVRE(G)                     =       IGWND(G)
-                                                + IGSOLE(G);
 
    IGESTOALL(G) =       IGESTO(G)
                          +IGESTOS(G);
@@ -1085,7 +1079,8 @@ $ifi %HYDROGEN%==yes HYDROGEN_DH2_VAR_T(AAA,SSS,TTT)$((NOT IA(AAA)) OR (NOT S(SS
 *DHF_STEPS(AAA,SSS,TTT,DF_QP,DHF)$((NOT IA(AAA)) OR (NOT S(SSS)) OR (NOT T(TTT))) = 0;
 *DHF_STEPS(IA,S,T,DF_QP,DHF)$((NOT DHF_D1(DHF) AND (NOT DHF_D2(DHF)) AND (NOT DHF_D3(DHF)) AND (NOT DHF_U1(DHF)) AND (NOT DHF_U2(DHF)) AND (NOT DHF_U3(DHF)))) = 0;
 
-GKRATE(AAA,GGG,SSS)$((NOT IA(AAA)) OR (NOT G(GGG)) OR (NOT S(SSS))) = 0;
+$ifi %GKRATE_DOL%==AAA_GGG_SSS GKRATE(AAA,GGG,SSS)$((NOT IA(AAA)) OR (NOT G(GGG)) OR (NOT S(SSS))) = 0;
+$ifi %GKRATE_DOL%==AAA_GGG_SSS_TTT GKRATE(AAA,GGG,SSS,TTT)$((NOT IA(AAA)) OR (NOT G(GGG)) OR (NOT S(SSS)) OR (NOT T(TTT))) = 0;
 FUELPRICE(YYY,AAA,FFF)$(NOT(Y(YYY)))=0;
 
 * Discounting
@@ -1275,9 +1270,8 @@ EQUATIONS
    QLIMCO2NA(Y,GROUP)        "Limit on annual CO2-emission by year (aggregated countries) (ton)"
 
    QMAXINVESTCF(Y,C,FFF)      "Maximal investment by country and fuel during one simulated year (MW)"
-   QMAXINVESTGROWTH(Y,C,G)  "Maximum model generated capacity increase from one year to the next (MW)"
+   QMAXINVESTGROWTHCG(Y,C,G)  "Maximum model generated capacity increase from one year to the next (MW)"
    QMAXINVESTNAF(Y,FFF)       "Maximal investment by aggerated countries and fuel during one simulated year (MW)"
-   QMAXINVESTGKN(Y,AAA,G)	  "Maximum total capacity of new generating technology (MW)"
 
    QGKNACCUMNET(Y,AAA,G)             "Accumulated new investments minus decommissioning of previous investments due to lifetime expiration available at beginning of next year (MW)"
    QGKE_UP(Y,AAA,G,S,T)              "Capacity constraint on electricity generation (MW)"
@@ -1352,7 +1346,6 @@ IOF1_ * IDISCOUNTFACTOR(Y) * IWEIGHTY(Y) * (
 *   discounted back to the first year in the present BB4 model, this latter is represented by factor IY4GINVCOSTWEIGHT below.
 *   Discounting further back from first year in the present BB4 model to the first year in Y is handled by the factor IDISCOUNTFACTOR(Y) above.
 *   The relative weight of the years is represented by   TODO: sammenlign med SONYstick:
-
    + IOF1000000*(SUM((IA,G)$(IAGKNY(Y,IA,G) AND (NOT IGKN_ES(G))), VGKN(Y,IA,G)*GINVCOST(IA,G)*(SUM(C$ICA(C,IA),ANNUITYCG(C,G)))*SUM(IYALIAS2$(ORD(IYALIAS2) EQ ORD(Y)),IYHASANNUITYG(Y,IYALIAS2,G))))
 
 * Investment costs, generation and storage capacity invested in previous years
@@ -1410,8 +1403,6 @@ QEEQ(IY411,IR,IS3,T)..
 $include "../../base/addons/_hooks/qeeq.inc"
 ;
 
-
-
 * "Heat generation equals demand (MW)"
 QHEQ(IY411,IA,IS3,T)$((SUM(DHUSER, IDH_SUMST(IA,DHUSER)) AND SUM(DHUSER,DH(IY411,IA,DHUSER)))
 $ifi  %HEATTRANS%==yes OR SUM(IAE,IXHK_HASORPOT(IY411,IAE,IA)) OR SUM(IAI,IXHK_HASORPOT(IY411,IA,IAI))
@@ -1434,14 +1425,14 @@ QDENET(IY411,IR,DEUSER,IS3,T)..
          =G=
                               ((DE(IY411,IR,DEUSER) * DE_VAR_T(IR,DEUSER,IS3,T)) / IDE_SUMST(IR,DEUSER))$(IDE_SUMST(IR,DEUSER) GT 0)
 $ifi %DemandResponse%==yes  + SUM((IA,DR_TECH)$(IADR(IY411,IA,DR_TECH) AND RRRAAA(IR,IA) AND DR_TECH_USER(DR_TECH,DEUSER)),  VDR_UP(IY411,IA,DR_TECH,IS3,T) - VDR_DOWN(IY411,IA,DR_TECH,IS3,T))
-$ifi %EV%==yes               + (VEV_VG2V_BEV(IY411,IR,IS3,T)$IHASBEV(IR) + VEV_VG2V_PHEV(IY411,IR,IS3,T)$IHASPHEV(IR) - VEV_VV2G_BEV(IY411,IR,IS3,T)$IHASBEV(IR) - VEV_VV2G_PHEV(IY411,IR,IS3,T)$IHASPHEV(IR))$IRESE(DEUSER)
+$ifi %EV%==yes               + (VEV_G2V_BEV(IY411,IR,IS3,T)$IHASBEV(IR) + VEV_G2V_PHEV(IY411,IR,IS3,T)$IHASPHEV(IR) - VEV_V2G_BEV(IY411,IR,IS3,T)$IHASBEV(IR) - VEV_V2G_PHEV(IY411,IR,IS3,T)$IHASPHEV(IR))$IRESE(DEUSER)
 $ifi %INDUSTRY%==yes          + SUM(IA$(RRRAAA(IR,IA) AND INDUSTRY_AAA(IA)), SUM(IGETOH$IAGK_HASORPOT(IY411,IA,IGETOH), VGE_T(IY411,IA,IGETOH,IS3,T)))$IIND(DEUSER)
-$ifi %INDUSTRY%==yes $ifi %HYDROGEN%==yes   + SUM(IA$(RRRAAA(IR,IA) AND INDUSTRY_AAA(IA)), SUM(G$(IAGK_HASORPOT(IY411,IA,G) AND (IHYDROGEN_GEHTOH2(G) OR IHYDROGEN_GETOHH2(G) OR IHYDROGEN_GETOH2(G) OR IHYDROGEN_GH2TOBIOMETH(G))), VGE_T(IY411,IA,G,IS3,T)))$IIND(DEUSER)
+$ifi %INDUSTRY%==yes $ifi %HYDROGEN%==yes   + SUM(IA$(RRRAAA(IR,IA) AND INDUSTRY_AAA(IA)), SUM(G$(IAGK_HASORPOT(IY411,IA,G) AND (IHYDROGEN_GEHTOH2(G) OR IHYDROGEN_GETOHH2(G) OR IHYDROGEN_GETOH2(G))), VGE_T(IY411,IA,G,IS3,T)))$IIND(DEUSER)
 $ifi %INDUSTRY%==yes          + SUM(IA$(RRRAAA(IR,IA) AND INDUSTRY_AAA(IA)),SUM(IGESTO$IAGK_HASORPOT(IY411,IA,IGESTO),VESTOLOADT(IY411,IA,IGESTO,IS3,T)))$IIND(DEUSER)
 $ifi %INDUSTRY%==yes          + SUM(IA$(RRRAAA(IR,IA) AND INDUSTRY_AAA(IA)),SUM(IGESTOS$IAGK_HASORPOT(IY411,IA,IGESTOS),VESTOLOADTS(IY411,IA,IGESTOS,IS3,T)))$IIND(DEUSER)
 $ifi %INDUSTRY%==yes          - SUM(IA$(RRRAAA(IR,IA) AND INDUSTRY_AAA(IA)), SUM(IGE$(IAGK_HASORPOT(IY411,IA,IGE) AND IGNOTETOH(IGE)),VGE_T(IY411,IA,IGE,IS3,T)))$IIND(DEUSER)
 $ifi %INDIVUSERS%==yes        + SUM(IA$(RRRAAA(IR,IA) AND INDIVUSERS_AAA(IA)), SUM(IGETOH$IAGK_HASORPOT(IY411,IA,IGETOH), VGE_T(IY411,IA,IGETOH,IS3,T)))$IRESE(DEUSER)
-$ifi %INDIVUSERS%==yes $ifi %HYDROGEN%==yes  + SUM(IA$(RRRAAA(IR,IA) AND INDIVUSERS_AAA(IA)), SUM(G$(IAGK_HASORPOT(IY411,IA,G) AND (IHYDROGEN_GEHTOH2(G) OR IHYDROGEN_GETOHH2(G) OR IHYDROGEN_GETOH2(G) OR IHYDROGEN_GH2TOBIOMETH(G))), VGE_T(IY411,IA,G,IS3,T)))$IRESE(DEUSER)
+$ifi %INDIVUSERS%==yes $ifi %HYDROGEN%==yes  + SUM(IA$(RRRAAA(IR,IA) AND INDIVUSERS_AAA(IA)), SUM(G$(IAGK_HASORPOT(IY411,IA,G) AND (IHYDROGEN_GEHTOH2(G) OR IHYDROGEN_GETOHH2(G) OR IHYDROGEN_GETOH2(G))), VGE_T(IY411,IA,G,IS3,T)))$IRESE(DEUSER)
 $ifi %INDIVUSERS%==yes        + SUM(IA$(RRRAAA(IR,IA) AND INDIVUSERS_AAA(IA)),SUM(IGESTO$IAGK_HASORPOT(IY411,IA,IGESTO),VESTOLOADT(IY411,IA,IGESTO,IS3,T)))$IRESE(DEUSER)
 $ifi %INDIVUSERS%==yes        + SUM(IA$(RRRAAA(IR,IA) AND INDIVUSERS_AAA(IA)),SUM(IGESTOS$IAGK_HASORPOT(IY411,IA,IGESTOS),VESTOLOADTS(IY411,IA,IGESTOS,IS3,T)))$IRESE(DEUSER)
 $ifi %INDIVUSERS%==yes        - SUM(IA$(RRRAAA(IR,IA) AND INDIVUSERS_AAA(IA)), SUM(IGE$(IAGK_HASORPOT(IY411,IA,IGE) AND IGNOTETOH(IGE)),VGE_T(IY411,IA,IGE,IS3,T)))$IRESE(DEUSER)
@@ -1584,7 +1575,7 @@ $include "../../base/addons/_hooks/qhyrsseq.inc"
 ;
 
 * "Hydropower reservoir - minimum level (MWh)"
-QHYRSMINVOL(IY411,IA,S)$(HYRSDATA(IA,"HYRSMINVOL",S) AND SUM(IGHYRS$IAGK_HASORPOT(IY411,IA,IGHYRS),1) AND IS3_NEXT(S-1))..
+QHYRSMINVOL(IY411,IA,S)$(HYRSDATA(IA,"HYRSMINVOL",S) AND SUM(IGHYRS$IAGK_HASORPOT(IY411,IA,IGHYRS),1) AND IS3_NEXT(S))..
      VHYRS_S(IY411,IA,S)  =G=  HYRSDATA(IA,"HYRSMINVOL",S)*
        SUM(IGHYRS,   HYRSMAXVOL_G(IA,IGHYRS)*(
          GKFX(IY411,IA,IGHYRS)$IAGKFX(IY411,IA,IGHYRS)
@@ -1595,7 +1586,7 @@ $include "../../base/addons/_hooks/qhyrsminvol.inc"
 ;
 
 * "Hydropower reservoir - maximum level (MWh)"
-QHYRSMAXVOL(IY411,IA,S)$(HYRSDATA(IA,"HYRSMAXVOL",S) AND SUM(IGHYRS$IAGK_HASORPOT(IY411,IA,IGHYRS),1) AND IS3_NEXT(S-1))..
+QHYRSMAXVOL(IY411,IA,S)$(HYRSDATA(IA,"HYRSMAXVOL",S) AND SUM(IGHYRS$IAGK_HASORPOT(IY411,IA,IGHYRS),1) AND IS3_NEXT(S))..
        HYRSDATA(IA,"HYRSMAXVOL",S) *
        SUM(IGHYRS,  HYRSMAXVOL_G(IA,IGHYRS)*(
          GKFX(IY411,IA,IGHYRS)$IAGKFX(IY411,IA,IGHYRS)
@@ -2215,19 +2206,6 @@ QMAXINVESTNAF(IY411,FFF)$(FMAXINVESTNA(IY411,FFF) AND (FMAXINVESTNA(IY411,FFF) L
            )
 ;
 
-* "Maximum model generated capacity increase from one year to the next (MW)"
-QMAXINVESTGROWTH(IY411,C,G)$(GROWTHCAP(C,G) AND (GROWTHCAP(C,G) LT INF)) ..
-	GROWTHCAP(C,G)
-=G=
-	SUM((IAGKNY(IY411,IA,G))$(ICA(C,IA)), VGKN(IY411,IA,G))
-;
-
-*"Maximum total capacity of new generating technology (MW)"
-QMAXINVESTGKN(IY411,IA,G)$(GKNMAX(IY411,IA,G) AND (GKNMAX(IY411,IA,G) LT INF)) ..
-	GKNMAX(IY411,IA,G)
-=G=
-	VGKNACCUMNET(IY411,IA,G)
-;
 
 *-------------------------------------------------------------------------------
 * Accumulated new endogenous net generation capacity investments during present BB4 model
@@ -2243,39 +2221,6 @@ QGKNACCUMNET(IY411,IA,IGKFIND)$SUM(Y$(YVALUE(Y) LE YVALUE(IY411)),IAGKNY(Y,IA,IG
  + VGKN(IY411,IA,IGKFIND)$IAGKNY(IY411,IA,IGKFIND)
 
 $include "../../base/addons/_hooks/qgknaccumnet.inc";
-
-*---
-* Restrictions on accumulated new generation capacity
-*---
-
-EQUATION QGKNMAXSOLE(Y)            'Restriction on new solar PV generation capacity from one year to the next';
-EQUATION QGKNMAXWND(Y)             'Restriction on new wind generation capacity from one year to the next';
-EQUATION QGKNMAXHP(Y)              'Restriction on new heat pump capacity from one year to the next';
-EQUATION QGKNMAXHS(Y)			   'Restriction on new heat saving capacity from one year to the next';
-
-QGKNMAXSOLE(IY411)$(YVALUE(IY411) LE RAMP_YEAR)..
-        SUM((IA,IGSOLE),VGKN(IY411,IA,IGSOLE))
-                =L=
-        IWEIGHTY(IY411) * RAMP_RATE_SOLE * IOF1000
-;
-
-QGKNMAXWND(IY411)$(YVALUE(IY411) LE RAMP_YEAR)..
-        SUM((IA,IGWND),VGKN(IY411,IA,IGWND))
-                =L=
-        IWEIGHTY(IY411) * RAMP_RATE_WND * IOF1000
-;
-
-QGKNMAXHP(IY411)$(YVALUE(IY411) LE RAMP_YEAR)..
-        SUM((IA,IHEATPUMP),VGKN(IY411,IA,IHEATPUMP))
-                =L=
-        IWEIGHTY(IY411) * RAMP_RATE_HP * IOF1000
-;
-QGKNMAXHS(IY411)$(YVALUE(IY411) LE RAMP_YEAR)..
-        SUM((IA,IGHS),VGKN(IY411,IA,IGHS))
-                =L=
-        IWEIGHTY(IY411) * RAMP_RATE_HS * IOF1000
-;
-
 
 *-------------------------------------------------------------------------------
 *---------- Capacity constraint on technologies wiht endogenous investment -----
@@ -2559,19 +2504,12 @@ $ifi not %TechInvest%==yes $ifi not %DECOM%==yes  $goto NO_TECH_INVESTMENTS_NO_D
                                  QKMINFNA
                                  QKMAXFNA
                                  QKEQFNA
-
 *                                QKMINFA  TODO
 *                                QKMAXFA  TODO
 *                                QKEQFA   TODO
 *--- Investment restrictions----------------------------------------------------
                                  QMAXINVESTNAF
                                  QMAXINVESTCF
-                                 QMAXINVESTGROWTH
-                                 QMAXINVESTGKN
-$ifi %RampingVRE%==yes                   QGKNMAXSOLE
-$ifi %RampingVRE%==yes                   QGKNMAXWND
-$ifi %RampingVRE%==yes                   QGKNMAXHP
-$ifi %RampingVRE%==yes $ifi %GHEATSAVING%==yes  QGKNMAXHS
 
 $label  NO_TECH_INVESTMENTS_NO_DECOMMISSIONING
 *---------------------------------------------------------------
@@ -2641,7 +2579,7 @@ $ifi not exist 'Balmorelbb4.sim'  $include '../../base/model/Balmorelbb4.sim';
 
 *--- Main results calculation -----------------------------------------------
 $ifi %OUTPUT_SUMMARY%==yes $if     EXIST '../../base/output/OUTPUT_SUMMARY.inc' $INCLUDE         '../../base/output/OUTPUT_SUMMARY.inc';
-*$ifi %OUTPUT_SUMMARY%==yes $ifi %OPTIFLOW%==yes $if     EXIST '../../base/output/Optiflow_OutputFile.inc' $INCLUDE         '../../base/output/Optiflow_OutputFile.inc';
+$ifi %OUTPUT_SUMMARY%==yes $ifi %OPTIFLOW%==yes $if     EXIST '../../base/output/Optiflow_OutputFile.inc' $INCLUDE         '../../base/output/Optiflow_OutputFile.inc';
 *--- End of Main results calculation ---------------------------------------
 
 
@@ -2874,29 +2812,28 @@ $ifi %HYDROGEN%==yes  execute_unload  "../../simex/XH2KACCUMNET.gdx", XH2KACCUMN
 $ifi %HYDROGEN%==yes XH2KACCUMNET(Y,IRE,IRI)=0;
 
 
-$ifi %EV%==yes   EV_VSOC_BEV(Y,IR,S,T)$IHASBEV(IR)=VEV_VSOC_BEV.L(Y,IR,S,T);
-$ifi %EV%==yes   EV_VSOC_PHEV(Y,IR,S,T)$IHASPHEV(IR)=VEV_VSOC_PHEV.L(Y,IR,S,T);
+$ifi %EV%==yes   $ifi %EV%==yes EV_BE_BEV(Y,IR,S,T)$IHASBEV(IR)=VEV_BE_BEV.L(Y,IR,S,T);
+$ifi %EV%==yes EV_BE_PHEV(Y,IR,S,T)$IHASPHEV(IR)=VEV_BE_PHEV.L(Y,IR,S,T);
 
-$ifi %EV%==yes  EV_BEV_NETCHARGING(Y,IR,S,T)$IHASBEV(IR)= + (EV_BEV_SOCFlex(Y,S,T,IR) + VEV_VG2V_BEV.L(Y,IR,S,T) * EV_PEFF(Y) - EV_BEV_Flex(Y,S,T,IR))
-$ifi %EV%==yes $ifi %V2G%==yes   - VEV_VV2G_BEV.L(Y,IR,S,T) / EV_PEFF(Y)
-$ifi %EV%==yes $ifi %EV_infeas%==yes     +VQEV_BEV_SOCBALANCE.L(Y,IR,S,T,'IMINUS') -VQEV_BEV_SOCBALANCE.L(Y,IR,S,T,'IPLUS')
-$ifi %EV%==yes  ;
+$ifi %EV%==yes $ifi not %EV_allreturn%==yes EV_BEV_NETCHARGING(Y,IR,S,T)$IHASBEV(IR)= + (IEV_BEV_return(Y,S,T,IR)*EV_BEV_return_energy(Y) + VEV_G2V_BEV.L(Y,IR,S,T) * EV_BEV_G2V_EFF(Y) + IEV_BEV_leave(Y,S,T,IR)*EV_BEV_leave_energy(Y))
+$ifi %EV%==yes $ifi %EV_allreturn%==yes EV_BEV_NETCHARGING(Y,IR,S,T)$IHASBEV(IR)= + (IEV_BEV_return(Y,S,T,IR)*(EV_BEV_batsize(Y)-EV_BEV_return_energy(T,IR)) + VEV_G2V_BEV.L(Y,IR,S,T) * EV_BEV_G2V_EFF(Y) + IEV_BEV_leave(Y,S,T,IR)*EV_BEV_leave_energy(Y))
+$ifi %EV%==yes $ifi %V2G%==yes - VEV_V2G_BEV.L(Y,IR,S,T)/EV_BEV_V2G_EFF(Y)
+$ifi %EV%==yes $ifi %EV_infeas%==yes +VQEV_BEV_BEBALANCE.L(Y,IR,S,T,'IMINUS') -VQEV_BEV_BEBALANCE.L(Y,IR,S,T,'IPLUS')
+$ifi %EV%==yes ;
 
-$ifi %EV%==yes  EV_PHEV_NETCHARGING(Y,IR,S,T)$IHASPHEV(IR)= + (EV_PHEV_SOCFlex(Y,S,T,IR) + VEV_VG2V_PHEV.L(Y,IR,S,T) * EV_PEFF(Y) - EV_PHEV_Flex(Y,S,T,IR))
-$ifi %EV%==yes $ifi %V2G%==yes   - VEV_VV2G_PHEV.L(Y,IR,S,T) / EV_PEFF(Y)
-$ifi %EV%==yes $ifi %EV_infeas%==yes     +VQEV_PHEV_SOCBALANCE.L(Y,IR,S,T,'IMINUS') -VQEV_PHEV_SOCBALANCE.L(Y,IR,S,T,'IPLUS')
-$ifi %EV%==yes  ;
+$ifi %EV%==yes EV_PHEV_NETCHARGING(Y,IR,S,T)$IHASPHEV(IR)= + (IEV_PHEV_return(Y,S,T,IR)*EV_PHEV_return_energy(Y) + VEV_G2V_PHEV.L(Y,IR,S,T) * EV_PHEV_G2V_EFF(Y) + IEV_PHEV_leave(Y,S,T,IR)*EV_PHEV_leave_energy(Y))
+$ifi %EV%==yes $ifi %V2G%==yes - VEV_V2G_PHEV.L(Y,IR,S,T)/EV_PHEV_V2G_EFF(Y)
+$ifi %EV%==yes $ifi %EV_infeas%==yes +VQEV_PHEV_BEBALANCE.L(Y,IR,S,T,'IMINUS') -VQEV_PHEV_BEBALANCE.L(Y,IR,S,T,'IPLUS')
+$ifi %EV%==yes ;
 
-$ifi %EV%==yes   execute_unload  "../../simex/EV_VSOC_BEV.gdx", EV_VSOC_BEV;
-$ifi %EV%==yes   execute_unload  "../../simex/EV_VSOC_PHEV.gdx", EV_VSOC_PHEV;
-$ifi %EV%==yes   execute_unload  "../../simex/EV_BEV_NETCHARGING.gdx", EV_BEV_NETCHARGING;
-$ifi %EV%==yes   execute_unload  "../../simex/EV_PHEV_NETCHARGING.gdx", EV_PHEV_NETCHARGING;
+$ifi %EV%==yes execute_unload "../../simex/EV_BE_BEV.gdx", EV_BE_BEV;
+$ifi %EV%==yes execute_unload "../../simex/EV_BE_PHEV.gdx", EV_BE_PHEV;
+$ifi %EV%==yes execute_unload "../../simex/EV_BEV_NETCHARGING.gdx", EV_BEV_NETCHARGING;
+$ifi %EV%==yes execute_unload "../../simex/EV_PHEV_NETCHARGING.gdx", EV_PHEV_NETCHARGING;
 
 *Reducing size of export files once they have been exported
-$ifi %EV%==yes   EV_VSOC_BEV(Y,IR,S,T)=0;
-$ifi %EV%==yes   EV_VSOC_PHEV(Y,IR,S,T)=0;
-$ifi %EV%==yes   EV_BEV_NETCHARGING(Y,IR,S,T)=0;
-$ifi %EV%==yes   EV_PHEV_NETCHARGING(Y,IR,S,T)=0;
+$ifi %EV%==yes EV_BEV_NETCHARGING(Y,IR,S,T)=0;
+$ifi %EV%==yes EV_PHEV_NETCHARGING(Y,IR,S,T)=0;
 
 $ifi %INDIVUSERS%==yes $ifi %GROUP_DEMAND_SHIFT%==yes INDIVUSERS_GROUPSHARE(Y,IR,DHUSER,INDIVUSERS_GROUP)=VINDIVUSERS_GROUPSHARE.L(Y,IR,DHUSER,INDIVUSERS_GROUP);
 $ifi %INDIVUSERS%==yes $ifi %GROUP_DEMAND_SHIFT%==yes execute_unload  "../../simex/INDIVUSERS_GROUPSHARE.gdx", INDIVUSERS_GROUPSHARE;

@@ -710,8 +710,6 @@ $if     EXIST '../data/XMAXINV.inc' $INCLUDE         '../data/XMAXINV.inc';
 $if not EXIST '../data/XMAXINV.inc' $INCLUDE '../../base/data/XMAXINV.inc';
 %semislash%;
 
-
-*OBS FF
 *Parameters for relative cost increase from underwater share (electricity transmission)
 PARAMETER TRANSSHARE_SUBSEA(IRRRE,IRRRI)  'Fraction of corridor length between IRE and IRI that is underwater'
 $if     EXIST '../data/TRANSSHARE_SUBSEA.inc' $INCLUDE         '../data/TRANSSHARE_SUBSEA.inc';

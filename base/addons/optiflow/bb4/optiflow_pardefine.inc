@@ -253,7 +253,7 @@ PROCEXIM_ENDO_LOSS(IAAAE,IAAAI,PROC,FLOW)$(PROCEXIM_ENDO_SET(PROC,FLOW)) = MIN(1
 
 * Operational Run
 
-PARAMETER PROCKAPACCUMNET(Y,AAAOPTIFLOW,PROC) "Capacities from investment run to be fixed in operational run";
+PARAMETER PROCKAPACCUMNET(Y,IAAAE,PROC) "Capacities from investment run to be fixed in operational run";
 PARAMETER PROCEXIMKAPACCUMNET(Y,IAAAE,IAAAI,PROC) "Inter-region transmission capacities from investment run to be fixed in operational run";
 
 * Sectoral carbon budgets
