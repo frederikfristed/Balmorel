@@ -42,6 +42,9 @@ EQUATION QMAXFLOW_C(Y,C,PROC,FLOW)   "Constraint of FLOW consumption equals to a
 EQUATION QMINFLOW_A(Y,AAA,PROC,FLOW)  "Constraint of FLOW consumption equals to a value in an Area in a Source,Buffer or Sink Process";
 EQUATION QMINFLOW_R(Y,RRR,PROC,FLOW)  "Constraint of FLOW consumption equals to a value in a Region in a Source,Buffer or Sink Buffer Process";
 EQUATION QMINFLOW_C(Y,C,PROC,FLOW)   "Constraint of FLOW consumption equals to a value in a Country in a Source,Buffer or Sink Buffer Process";
+
+
+
 ;
 *-------------------------------------------------------------------------------
 *----- Any declarations and definitions of equations for addon:
@@ -53,12 +56,10 @@ $ifi %inv%==yes  EQUATION QPROCKAUP_SCALE1(Y,AAA,PROC)   "Equation for modelling
 $ifi %inv%==yes  EQUATION QPROCKAUP_SCALE2(Y,AAA,PROC)   "Equation for modelling economy of scale of new investments"  ;
 $ifi %inv%==yes  EQUATION QPROCKAP_DEC(Y,AAA,IPROCFROM,IPROCTO,FLOW,S,T) "Equation for modelling of decomissioning plants";
 
-* OBS FF
-$ifi %inv%==yes  EQUATION QPROCEXIMKAPACCUMNET          'Accumulate PROCEXIM capacity over investment years';
+*** Investment in transport capacity
+$ifi %inv%==yes  EQUATION QPROCEXIMKAPACCUMNET          'Accumulate PROCEXIM capacity over investment years'
 $ifi %inv%==yes  EQUATION QPROCEXIMKAP                  'Capacity constraint on transport processes (U/h)';
 $ifi %inv%==yes  EQUATION QPROCEXIMKAP_SYMMETRY         'Transport capcity investments are symmetric';
-
-
 
 * Flows from SOSIBU and EXIM in units [U/h] are indic-weighted, time-weighted and summarized.
 QINDICQUANT(IY411,FLOWINDIC)..
@@ -478,8 +479,8 @@ QPROCKAP_UP(IY411,IA,IPROCFROM,IPROCTO,FLOW,S,T)$(
     )
 ;
 
-* OBS FF * Optiflow Capacity Investments in ProcExim *
 
+*** Investments in transport capacity
 * Define PROCINOUTRELATION='IFLOWINOUT_SYM_INV' in IPROCKAPDATA
 * Define Proc in PROCEXIM
 * Define in IAPROCEXIMKAPNEW(Y,IAE,IAI,IPROC)
@@ -515,7 +516,7 @@ QPROCEXIMKAP_SYMMETRY(Y,IAE,IAI,IPROC)$(ITRANSFROMTOPROC(IPROC,IAE,IAI) AND IAPR
 
 * Fix source flows in offshore areas
 VFLOWSOURCE.UP(IY411,IA,PROCSOURCE,FLOW,S,T)$(
-    AAAOPTIFLOW_OFF(IA) AND ICO2(PROCSOURCE,FLOW)
+    AAAOPTIFLOW_Offshore(IA) AND ICO2(PROCSOURCE,FLOW)
 ) = 0;
 
 *Maritime carbon budget
@@ -640,24 +641,6 @@ QSTOVOLTLIM(IY411,IA,PROCSTORAGE_Y,FLOW,S)$((IAPROCKAPNEW(IY411,IA,PROCSTORAGE_Y
 *  + SUM(IY402$IY411PREVY(IY411,IY402),VPROCKAPACCUMNET(IY402,IA,PROCSTORAGE_Y))                     !! CHECK
   + VPROCKAPNEW(IY411,IA,PROCSTORAGE_Y)$((IAPROCKAPNEW(IY411,IA,PROCSTORAGE_Y) AND PROCKAPDATA(IY411,PROCSTORAGE_Y,FLOW,'IFLOWINOUT_IN')))
 ;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 *Equation for fuel constraints at an annual level

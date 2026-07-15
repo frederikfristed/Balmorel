@@ -1,5 +1,4 @@
-* CCU in optiflow, requires CCS add-on. Added by Theis Madsen.
-* OBS FF
+* CCU in optiflow, requires CCS add-on.
 
 $ifi not %CCS%==yes $goto NOCCUS
 

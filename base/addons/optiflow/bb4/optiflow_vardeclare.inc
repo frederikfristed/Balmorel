@@ -29,7 +29,7 @@ POSITIVE VARIABLE VQFLOWSHAREOUT2INFX(Y,AAA,PROC,IFLOWIN,IFLOWOUT,S,T,ILOUPFXSET
 $ifi %inv%==yes   POSITIVE VARIABLE VPROCKAPACCUMNET(Y,AAA,PROC)         'Accumulated new investments (Presently not: minus any decommissioning of them due to lifetime expiration) this BB4, at end of previous (i.e., start of current) year (MW)';
 $ifi %inv%==yes   POSITIVE VARIABLE VPROCKAPNEW(Y,AAA,PROC)              'New capacity (/h)';  !! se kommentarer til YYY  i bb4.sim
 
-*OBS FF
+*** Investments in transport capacity
 $ifi %inv%==yes   POSITIVE VARIABLE VPROCEXIMKAPACCUMNET(Y,IAAAE,IAAAI,PROC)        'Accumulated transport process capacity in Y (/h)';
 $ifi %inv%==yes   POSITIVE VARIABLE VPROCEXIMKAPNEW(Y,IAAAE,IAAAI,PROC)     'New transport process capacity in Y (/h)'
 
@@ -63,7 +63,6 @@ $ifi %addUP%==yes VFLOWTRANS.UP(Y,IAAAE,IAAAI,PROCEXIM,FLOW,S,T) = ILOUPBOUNDS;
 $ifi %addUP%==yes VSTORAGEVOL.UP(Y,IA,PROCSTORAGE,FLOW,S,T)   	 = ILOUPBOUNDS;
 $ifi %addUP%==yes VPROCKAPNEW.UP(Y,IA,PROC)                   	 = ILOUPBOUNDS;
 
-*OBS FF
 VPROCKAPNEW.UP(Y,IA,PROC)$(APROCKAPNEW(Y,IA,PROC))				 =1E7;
 VFLOWINDICVALUES.UP(Y,FLOWINDIC)      		 					 =1E11;
 VFLOWSOURCE.UP(Y,IA,PROCSOURCE,FLOW,S,T)    					 =1E8;

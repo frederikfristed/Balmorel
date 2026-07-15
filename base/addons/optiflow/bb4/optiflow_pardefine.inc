@@ -8,11 +8,6 @@ $if     EXIST '../data/OPTIFLOW_AAAOPTIFLOW.inc' $INCLUDE         '../data/OPTIF
 $if not EXIST '../data/OPTIFLOW_AAAOPTIFLOW.inc' $INCLUDE '../../base/data/OPTIFLOW_AAAOPTIFLOW.inc';
 %semislash%;
 
-SET  AAAOPTIFLOW_OFF(AAA) "Offshore areas used in the OptiFlow calculations"%semislash%
-$if     EXIST '../data/OPTIFLOW_AAAOPTIFLOW_OFF.inc' $INCLUDE         '../data/OPTIFLOW_AAAOPTIFLOW_OFF.inc';
-$if not EXIST '../data/OPTIFLOW_AAAOPTIFLOW_OFF.inc' $INCLUDE '../../base/data/OPTIFLOW_AAAOPTIFLOW_OFF.inc';
-%semislash%
-
 SET AAATRANSIT(AAA)   'Areas that are for waste transit only';
 SET AAAIMPORT(AAA)    'Areas that are for waste import only';
 ALIAS (AAATRANSIT,IATRANSITE,IATRANSITI);
@@ -89,6 +84,7 @@ PARAMETER CYCLES(TTT);
 CYCLES(T)=CARD(TTT)/(CARD(T)*TIMELENGHT(T));
 
 
+
 *-------------------------------------------------------------------------------
 * WASTE NETWORK WITHIN AREAS (PROCESSES AND FLOWS):
 *-------------------------------------------------------------------------------
@@ -103,7 +99,7 @@ $if     EXIST '../data/OPTIFLOW_PROC.inc' $INCLUDE         '../data/OPTIFLOW_PRO
 $if not EXIST '../data/OPTIFLOW_PROC.inc' $INCLUDE '../../base/data/OPTIFLOW_PROC.inc';
 %semislash%;
 
-ALIAS (PROC,IPROC,IPROCFROM,IPROCTO,IPROCFROM2,IPROCTO2,IPROCABROAD); !!IPROCABROAD ?
+ALIAS (PROC,IPROC,IPROC2,IPROCFROM,IPROCTO,IPROCFROM2,IPROCTO2,IPROCABROAD); !!IPROCABROAD ?
 
 * Indholdet i denne kan garanteres afledes af PROCPAR nedenfor, lige nu h�ndlaver vi den.
 * Men i �vrigt er det formentlig sikrere (ift. bruger) at definere eksplicit her. B�r i �vrigt checkes i errorcode. TODO/done?
@@ -217,7 +213,8 @@ ITRANSFROMTOPROC(PROC,IAAAE,IAAAI) = NO;
 ITRANSFROMTOPROC(PROC,IAE,IAI)$(AAAOPTIFLOW(IAE) AND AAAOPTIFLOW(IAI) AND TRANSDIST(PROC,IAE,IAI)) = YES;
 ITRANSFROMTOPROC(PROC,IA,IA) = NO;
 
-* OBS FF * Optiflow Capacity Investments in ProcExim *
+
+*** Investments in transport capacity
 
 * Areas with new PROCEXIM investments
 $ifi %inv%==yes ALIAS(AAAOPTIFLOW,IAAAEOPTIFLOW,IAAAIOPTIFLOW);
@@ -299,7 +296,6 @@ PARAMETER OPTIFLOW_TRANSSHARE_SUBSEA(PROC,IAAAE,IAAAI)	'Fraction of pipeline len
 $if     EXIST '../data/OPTIFLOW_TRANSSHARE_SUBSEA.inc' $INCLUDE         '../data/OPTIFLOW_TRANSSHARE_SUBSEA.inc';
 $if not EXIST '../data/OPTIFLOW_TRANSSHARE_SUBSEA.inc' $INCLUDE '../../base/data/OPTIFLOW_TRANSSHARE_SUBSEA.inc';
 %semislash%;
-
 
 *Parameters for relative cost increase from mountainous share
 PARAMETER OPTIFLOW_TRANSSHARE_MOUNTAIN(PROC,IAAAE,IAAAI)	'Fraction of pipeline length between IAAAE and IAAAI in mountainous regions'
@@ -490,6 +486,16 @@ PARAMETER IPROCKAPFXINV_Y(AAA,PROC) "Investments in plants from previous years i
 
 SET IPROCINOUTRELATION "Possible relationships between process inflow and outflow" / IONEONE, IONEMANY, IMANYONE, IONEONEREC /;
 
+Set PROCTECHTYPE(PROC,TECH_GROUP) "Type of technology aggrigated"  %semislash%;
+$if     EXIST '../data/OPTIFLOW_PROCTECHTYPE.inc' $INCLUDE         '../data/OPTIFLOW_PROCTECHTYPE.inc';
+$if not EXIST '../data/OPTIFLOW_PROCTECHTYPE.inc' $INCLUDE '../../base/data/OPTIFLOW_PROCTECHTYPE.inc';
+%semislash%;
+
+
+SET TECH_GROUP_AS_PROC(PROC);
+TECH_GROUP_AS_PROC(PROC) = YES$(SUM(TECH_GROUP$(SAMEAS(PROC,TECH_GROUP)),1));
+%semislash%;
+
 SET FLOWFROMTOPROC(YYY,AAA,IPROCFROM,IPROCTO,FLOW) "FLOW from PROC (index 2) to PROC (index 3)" %semislash%
 $if     EXIST '../data/OPTIFLOW_FLOWFROMTOPROC.inc' $INCLUDE         '../data/OPTIFLOW_FLOWFROMTOPROC.inc';
 $if not EXIST '../data/OPTIFLOW_FLOWFROMTOPROC.inc' $INCLUDE '../../base/data/OPTIFLOW_FLOWFROMTOPROC.inc';
@@ -510,7 +516,6 @@ IPROCINOUTFLOW(Y,IA,PROC,IFLOWIN,IFLOWOUT) = YES$(SUM(IPROCINOUTRELATION$PROCINO
 
 SET  IPROCINOUTFLOW_Y_set(AAA,PROC,IFLOWIN,IFLOWOUT) "Set of combinations of (AAA,PROC,IFLOWIN,IFLOWOUT) in PROCINOUTFLOW";
 
-* OBS FF *
 SET ALLOWEDTRANS(PROC, FLOW)	"Set of areas that are connected for transport via process proc";
 $if     EXIST '../data/OPTIFLOW_ALLOWEDTRANS.inc' $INCLUDE         '../data/OPTIFLOW_ALLOWEDTRANS.inc';
 $if not EXIST '../data/OPTIFLOW_ALLOWEDTRANS.inc' $INCLUDE '../../base/data/OPTIFLOW_ALLOWEDTRANS.inc';
@@ -751,25 +756,7 @@ $if not EXIST '../data/OPTIFLOW_INDICLIMGOAL.inc' $INCLUDE '../../base/data/OPTI
 %semislash%;
 
 SCALAR IPENALTYQ   "Penalty on violation of equation" / 1e9 /;
-SCALAR ILOUPBOUNDS "Default lower and upper bounds to guard against unbounded solution" /1e8/;
-
-Set PROCTECHTYPE(PROC,TECH_GROUP) "Type of technology aggrigated"  %semislash%;
-$if     EXIST '../data/OPTIFLOW_PROCTECHTYPE.inc' $INCLUDE         '../data/OPTIFLOW_PROCTECHTYPE.inc';
-$if not EXIST '../data/OPTIFLOW_PROCTECHTYPE.inc' $INCLUDE '../../base/data/OPTIFLOW_PROCTECHTYPE.inc';
-%semislash%;
-
-
-
-
-
-
-
-
-
-
-
-
-
+SCALAR ILOUPBOUNDS "Default lower and upper bounds to guard against unbounded solution" /1e10/;
 
 
 
