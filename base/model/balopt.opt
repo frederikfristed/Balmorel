@@ -558,7 +558,7 @@ $setglobal optiOCC yes
 * ! option yes
 
 * Import renewable fuels from a global exogenous market at fixed cost
-$setglobal optiGlobalFuels yes
+$setglobal optiGlobalFuels
 *! option yes
 
 *Perform operational run by fixing capacities to PROCKAPAACUMNET in /localsimex
