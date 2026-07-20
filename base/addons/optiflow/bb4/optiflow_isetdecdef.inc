@@ -57,7 +57,11 @@ ICO2_CC('Biogas_Upgrading_50','CO2_FLOW') = YES;
 *** OCC accounting note
 *** MDO emissions are added in SOSIBU2INDIC. OCC captured share is subtracted here, yielding a net reduction in residual emissions.
 *** For fossil drop-in fuels, OCC captured share is simply subtracted. This yields carbon neutral cycling for CCU and net removal for CCS.
-ICO2_CC('CO2_Port_Handling','CO2_FLOW') = YES;
+
+ICO2_CC('Biooil_Eff_OCC','CO2NEG_FLOW') = YES;
+ICO2_CC('EFT_Diesel_Eff_OCC','CO2NEG_FLOW') = YES;
+ICO2_CC('LBG_Eff_OCC','CO2NEG_FLOW') = YES;
+
 
 *** Re-adding CO2 used for utilisation in OptiFlow
 *** ICO2_CU(PROC,FLOW) identifies CO2 flows consumed for CU pathways.
