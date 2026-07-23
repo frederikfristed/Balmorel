@@ -71,10 +71,28 @@ BUFFER_SHADOW_PRICE(Y,IA,PROCBUFFER,FLOW,S,T)$IPROCTIMESETS(PROCBUFFER,T)
    = QBUFFERNODEBALANCE.M(Y,IA,PROCBUFFER,FLOW,S,T) / IDISCOUNTFACTOR(Y) / IHOURSINST(S,T);
 
 * Fuel production shadow prices
-Parameter FUEL_PRICE_YST(Y,AAA,PROCSINK,FLOW,SSS,TTT) 'Shadow price of fuels, based on QBUFFERNODEBALANCE, per S,T (€/GJ)';
-FUEL_PRICE_YST(Y,IA,'Fuel_Price_Buffer',FLOW,S,T)$(
-    IPROCTIMESETS('Fuel_Price_Buffer',T)
-) = QSINKNODEBALANCE.M(Y,IA,'Fuel_Price_Buffer',FLOW,S,T)*OMONEY / IDISCOUNTFACTOR(Y) / IHOURSINST(S,T) / IWEIGHTY(Y);
+$onMulti
+SET FuelPriceSinks(PROCSINK) /
+    Fuel_Price_Raw
+    Fuel_Price_Long
+    Fuel_Price_Medium
+    Fuel_Price_Short
+    Fuel_Price_Legacy
+    Fuel_Price_Tanker
+/;
+$offMulti
+
+Parameter FUEL_PRICE_YST(Y,AAA,PROCSINK,FLOW,SSS,TTT);
+
+FUEL_PRICE_YST(Y,IA,PROCSINK,FLOW,S,T)$(
+    FuelPriceSinks(PROCSINK)
+    AND IPROCTIMESETS(PROCSINK,T)
+) =
+    QSINKNODEBALANCE.M(Y,IA,PROCSINK,FLOW,S,T)
+    * OMONEY
+    / IDISCOUNTFACTOR(Y)
+    / IHOURSINST(S,T)
+    / IWEIGHTY(Y);
 
 * CO2 prices
 Parameter CO2_PRICE_Y(Y);
