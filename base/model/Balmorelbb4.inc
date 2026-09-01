@@ -2195,7 +2195,7 @@ $include "../../base/addons/_hooks/qxk_up.inc"
 ;
 
 * Put a cap on transmission investments per model period, if a cap is specified
-VXKN.UP(Y,IRRRE,IRRRI)$(XINVCOST(Y,IRRRE,IRRRI) AND XMAXINV(Y,IRRRE,IRRRI)) = XMAXINV(Y,IRRRE,IRRRI);
+VXKNACCUMNET.UP(Y,IRRRE,IRRRI)$(XINVCOST(Y,IRRRE,IRRRI) AND XMAXINV(Y,IRRRE,IRRRI)) = XMAXINV(Y,IRRRE,IRRRI);
 
 
 * Accumulated endogenous transmission investments during present BB4 model -----

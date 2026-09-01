@@ -282,7 +282,7 @@ $ifi %H2TransInvest%==yes      + VXH2KNACCUMNET_NGTOH2(IY411,IRE,IRI)$SUM(Y$(YVA
 $ifi not %H2TransInvest%==yes $goto no_transmission_investments
 
 * Put a cap on transmission investments per model period, if a cap is specified
-VXH2KN.UP(Y,IRRRE,IRRRI)$(IXH2KN(Y,IRRRE,IRRRI) AND XH2INVCOST(Y,IRRRE,IRRRI) AND XH2MAXINV(Y,IRRRE,IRRRI)) = XH2MAXINV(Y,IRRRE,IRRRI);
+VXH2KNACCUMNET.UP(Y,IRRRE,IRRRI)$(IXH2KN(Y,IRRRE,IRRRI) AND XH2INVCOST(Y,IRRRE,IRRRI) AND XH2MAXINV(Y,IRRRE,IRRRI)) = XH2MAXINV(Y,IRRRE,IRRRI);
 
 
 *"NOT FINISHED, TODO, Accumulated new heat transmission investments available at beginning of next year (MW)"
