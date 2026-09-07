@@ -697,6 +697,14 @@ $if not EXIST '../data/XLOSS.inc' $INCLUDE '../../base/data/XLOSS.inc';
 *------------- Any XLOSS additions for addon to be placed here: ----------------
 $include "../../base/addons/_hooks/xlossadditions.inc"
 
+PARAMETER XDIST(IRRRE,IRRRI)               "Corridor length, centroid distance x detour (km)";
+$if     EXIST '../data/XDIST.inc' $INCLUDE         '../data/XDIST.inc';
+$if not EXIST '../data/XDIST.inc' $INCLUDE '../../base/data/XDIST.inc';
+
+PARAMETER EXPANSION_XK(YYY,GROWTHMODE) "Permitted transmission expansion (MW-km per year)";
+$if     EXIST '../data/EXPANSION_XK.inc' $INCLUDE         '../data/EXPANSION_XK.inc';
+$if not EXIST '../data/EXPANSION_XK.inc' $INCLUDE '../../base/data/EXPANSION_XK.inc';
+
 $ifi %XKRATE_DOL%==IRRRE_IRRRI          PARAMETER XKRATE(IRRRE,IRRRI)         "Transmission capacity rating (share; non-negative, typically close to 1; default/1/, use eps for 0)";
 $ifi %XKRATE_DOL%==IRRRE_IRRRI_SSS      PARAMETER XKRATE(IRRRE,IRRRI,SSS)     "Transmission capacity rating (share; non-negative, typically close to 1; default/1/, use eps for 0)";
 $ifi %XKRATE_DOL%==IRRRE_IRRRI_SSS_TTT  PARAMETER XKRATE(IRRRE,IRRRI,SSS,TTT) "Transmission capacity rating (share; non-negative, typically close to 1; default/1/, use eps for 0)";

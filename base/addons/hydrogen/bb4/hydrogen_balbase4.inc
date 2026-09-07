@@ -17,13 +17,12 @@ $ifi %COMBTECH%==yes   QHYDROGENGKE_UP_ADD
    QGKBIOGASUPGRADING_UP
    QGKBIOGASMETHANATION_UP
 
-
-
    QXH2K_UP
 $ifi %H2TransInvest%==yes  QXH2KNACCUMNET
 $ifi %H2TransInvest%==yes  QXH2KNACCUMNET_NGTOH2
 $ifi %H2TransInvest%==yes  QXH2INVSYMMETRY
 $ifi %H2TransInvest%==yes  QXH2INVSYMMETRY_NGTOH2
+$ifi %H2TransInvest%==yes  QEXPANSION_XH2K
 $ifi %H2TransInvest%==yes  QXH2KMAX_NGTOH2
 $ifi %H2TransInvest%==yes  $ifi %ES_H2TRANS%==yes  QVXH2KN_ES
 $ifi %H2TransInvest%==yes  $ifi %ES_H2TRANS%==yes  QXH2LAMBDA_ES

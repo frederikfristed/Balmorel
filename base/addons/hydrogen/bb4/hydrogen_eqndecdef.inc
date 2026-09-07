@@ -264,6 +264,8 @@ QXH2KNACCUMNET_NGTOH2(Y,IRRRE,IRRRI)  "NOT FINISHED, TODO, Accumulated new inves
 QXH2INVSYMMETRY(Y,IRRRE,IRRRI)        "H2 Transmission investments are set symetric(MW)"
 QXH2INVSYMMETRY_NGTOH2(Y,IRRRE,IRRRI) "Conversion of existing natural gas pipe to H2 Transmission investments are set symetric(MW)"
 QXH2KMAX_NGTOH2(Y,IRRRE,IRRRI)        "Maximum conversion of existing natural gas pipe to H2 transmission capacity between regions"
+QEXPANSION_XH2K(YYY)         "Continental limit on hydrogen transmission expansion, MW-km"
+
 *Equations for modelling economy of scale
 QVXH2KN_ES(YYY,IRRRE,IRRRI)  "Equation to ensure the proper H2 capacity when using SOS2 variables"
 QXH2LAMBDA_ES(YYY,IRRRE,IRRRI) "Equation to ensure all the Lambda variables are equal to 1 for the same H2 transmission line"
@@ -283,7 +285,6 @@ $ifi not %H2TransInvest%==yes $goto no_transmission_investments
 
 * Put a cap on transmission investments per model period, if a cap is specified
 VXH2KNACCUMNET.UP(Y,IRRRE,IRRRI)$(IXH2KN(Y,IRRRE,IRRRI) AND XH2INVCOST(Y,IRRRE,IRRRI) AND XH2MAXINV(Y,IRRRE,IRRRI)) = XH2MAXINV(Y,IRRRE,IRRRI);
-
 
 *"NOT FINISHED, TODO, Accumulated new heat transmission investments available at beginning of next year (MW)"
 QXH2KNACCUMNET(IY411,IRE,IRI)$SUM(Y$(YVALUE(Y) LE YVALUE(IY411)),IXH2KN(Y,IRE,IRI))..
@@ -313,6 +314,14 @@ QXH2INVSYMMETRY_NGTOH2(IY411,IRE,IRI)$IXH2KN_NGTOH2(IY411,IRE,IRI)..
    VXH2KN_NGTOH2(IY411,IRE,IRI)
          =E=
    VXH2KN_NGTOH2(IY411,IRI,IRE)
+;
+
+* "Limit expansion rates of H2 pipeliens at the continental level"
+QEXPANSION_XH2K(IY411)$(EXPANSION_XH2K(IY411,'Y_LIN_ADD') AND (NOT IYFIRST(IY411)))..
+    SUM((IR,IRI)$IXH2KN(IY411,IR,IRI),
+        IOF05 * XDIST(IR,IRI) * VXH2KN(IY411,IR,IRI))
+    =L=
+    EXPANSION_XH2K(IY411,'Y_LIN_ADD') * (YVALUE(IY411) - SUM(Y$IY411PREVY(IY411,Y), YVALUE(Y)))
 ;
 
 *"Maximum H2 transmission capacity between regions"

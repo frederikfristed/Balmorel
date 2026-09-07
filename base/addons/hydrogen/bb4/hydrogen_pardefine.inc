@@ -23,6 +23,10 @@ PARAMETER HYDROGEN_STOVOL_START(Y,AAA,G,SSS)    'Start level of hydrogen storage
 * Include start filling level of hydrogen storage obtained from yearly simulation
 $ifi %bb3%==yes execute_load '../../simex/HYDROGEN_STOVOL_START.gdx', HYDROGEN_STOVOL_START;
 
+PARAMETER EXPANSION_XH2K(YYY,GROWTHMODE) "Permitted hydrogen transmission expansion (MW-km per year)";
+$if     EXIST '../data/EXPANSION_XH2K.inc' $INCLUDE         '../data/EXPANSION_XH2K.inc';
+$if not EXIST '../data/EXPANSION_XH2K.inc' $INCLUDE '../../base/data/EXPANSION_XH2K.inc';
+
 $onmulti
 $if     EXIST '../data/HYDROGEN_DAC_DE.inc' $INCLUDE         '../data/HYDROGEN_DAC_DE.inc';
 $if not EXIST '../data/HYDROGEN_DAC_DE.inc' $INCLUDE '../../base/data/HYDROGEN_DAC_DE.inc';

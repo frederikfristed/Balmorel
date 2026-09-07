@@ -1288,8 +1288,8 @@ EQUATIONS
    QXKNACCUMNET(Y,IRRRE,IRRRI)       "Accumulated new transmission investments available at beginning of next year (MW)"
    QXK_UP(Y,IRRRE,IRRRI,S,T)         "Capacity constraint on electricity transmission (MW)"
    QXINVSYMMETRY(Y,IRRRE,IRRRI)      "Transmission investments are set symetric(MW)"
+   QEXPANSION_XK(YYY)				 "Limit transmission expansion rate"
    QDENET(Y,RRR,DEUSER,S,T)          "Net power load"
-
 
 *-------------------------------------------------------------------------------
 *----- Any equations declarations for addon to be placed here: -----------------
@@ -2216,6 +2216,26 @@ QXINVSYMMETRY(IY411,IRE,IRI)$IXKN(IY411,IRE,IRI)..
    VXKN(IY411,IRE,IRI)
 ;
 
+*QEXPANSION_XK(IY411,C)$(SUM((IR,GROWTHMODE)$CCCRRR(C,IR), EXPANSION_XK(IY411,IR,GROWTHMODE)) AND (NOT IYFIRST(IY411)))..
+
+**Half the effort of every corridor with an end in C, in MW-km. 
+**A corridor with both ends in C is visited twice and so is charged in full; a cross-border corridor is visited once by each country. 
+*    SUM((IR,IRI)$(CCCRRR(C,IR) AND IXKN(IY411,IR,IRI)),
+*        IOF05 * XDIST(IR,IRI) * VXKN(IY411,IR,IRI))
+
+*	=L=
+
+**Linear expansion allowance accrued over the length of the model period.
+*    SUM(IR$CCCRRR(C,IR), EXPANSION_XK(IY411,IR,'Y_LIN_ADD')) * (YVALUE(IY411) - SUM(Y$IY411PREVY(IY411,Y), YVALUE(Y)))
+*;
+
+QEXPANSION_XK(IY411)$(EXPANSION_XK(IY411,'Y_LIN_ADD') AND (NOT IYFIRST(IY411)))..
+    SUM((IR,IRI)$IXKN(IY411,IR,IRI),
+        IOF05 * XDIST(IR,IRI) * VXKN(IY411,IR,IRI))
+	=L=
+*One European allowance, accrued over the length of the model period.
+    EXPANSION_XK(IY411,'Y_LIN_ADD') * (YVALUE(IY411) - SUM(Y$IY411PREVY(IY411,Y), YVALUE(Y)))
+;
 
 
 *------------ Emissions: ------------------------------------------------------
@@ -2477,6 +2497,8 @@ $ifi %bypass%==yes              QGFEQEXTBYPASS2
 $ifi %TransInvest%==yes         QXKNACCUMNET
 $ifi %TransInvest%==yes         QXINVSYMMETRY
 $ifi %TransInvest%==yes         QXK_UP
+$ifi %TransInvest%==yes         QEXPANSION_XK
+
 
 *--- Electricity generation restrictions by fuel -------------------------------
 $ifi not %RollingSeasons%==yes QGMINFUELC
