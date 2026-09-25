@@ -37,3 +37,8 @@ QSYNTHETIC_EQ_SHIFT_BALANCE_MOVE
 QSYNTHETIC_EQ_SHIFT_BALANCE_OVERALL
 $label no_flexible_h2_space
 
+
+$ifi not %maritime_carbon_budget%==yes $goto no_h2_fossil_local_bb4
+QH2_FOSSIL_LOCAL
+
+$label no_h2_fossil_local_bb4
