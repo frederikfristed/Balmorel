@@ -292,6 +292,13 @@ $if not EXIST '../data/OPTIFLOW_PROCDATA.inc' $INCLUDE '../../base/data/OPTIFLOW
 %semislash%;
 
 *Parameters for relative cost increase from underwater share
+
+SCALAR OPTIFLOW_SUBSEA_REL_INCR	'Relative cost increase for underwater segment'
+$if     EXIST '../data/OPTIFLOW_SUBSEA_REL_INCR.inc' $INCLUDE         '../data/OPTIFLOW_SUBSEA_REL_INCR.inc';
+$if not EXIST '../data/OPTIFLOW_SUBSEA_REL_INCR.inc' $INCLUDE '../../base/data/OPTIFLOW_SUBSEA_REL_INCR.inc';
+%semislash%;
+
+
 PARAMETER OPTIFLOW_TRANSSHARE_SUBSEA(PROC,IAAAE,IAAAI)	'Fraction of pipeline length between IAAAE and IAAAI that is underwater'
 $if     EXIST '../data/OPTIFLOW_TRANSSHARE_SUBSEA.inc' $INCLUDE         '../data/OPTIFLOW_TRANSSHARE_SUBSEA.inc';
 $if not EXIST '../data/OPTIFLOW_TRANSSHARE_SUBSEA.inc' $INCLUDE '../../base/data/OPTIFLOW_TRANSSHARE_SUBSEA.inc';
@@ -307,7 +314,7 @@ $if not EXIST '../data/OPTIFLOW_TRANSSHARE_MOUNTAIN.inc' $INCLUDE '../../base/da
 PARAMETER OPTIFLOW_GEOMULT(PROC,IAAAE,IAAAI) 'Relative cost multiplier for electricity lines accounting for underwater and mountainous shares';
 
 OPTIFLOW_GEOMULT(PROC,IAAAE,IAAAI) =
-  + OPTIFLOW_TRANSSHARE_SUBSEA(PROC,IAAAE,IAAAI)      * (SUBSEA_REL_INCR - 1)
+  + OPTIFLOW_TRANSSHARE_SUBSEA(PROC,IAAAE,IAAAI)      * (OPTIFLOW_SUBSEA_REL_INCR - 1)
   + OPTIFLOW_TRANSSHARE_MOUNTAIN(PROC,IAAAE,IAAAI)    * (MOUNTAIN_REL_INCR  - 1)
 ;
 
