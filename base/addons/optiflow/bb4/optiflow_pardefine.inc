@@ -213,6 +213,11 @@ ITRANSFROMTOPROC(PROC,IAAAE,IAAAI) = NO;
 ITRANSFROMTOPROC(PROC,IAE,IAI)$(AAAOPTIFLOW(IAE) AND AAAOPTIFLOW(IAI) AND TRANSDIST(PROC,IAE,IAI)) = YES;
 ITRANSFROMTOPROC(PROC,IA,IA) = NO;
 
+* OBS FF: share of link cost booked on each direction. Two-way links book 0.5 per direction;
+* one-way links (onshore to offshore storage) book the full cost on the single direction.
+PARAMETER ITRANSCOSTSHARE(PROC,IAAAE,IAAAI) "Share of transport link cost booked on this direction (-)";
+ITRANSCOSTSHARE(PROC,IAE,IAI)$ITRANSFROMTOPROC(PROC,IAE,IAI) = 1 - 0.5$ITRANSFROMTOPROC(PROC,IAI,IAE);
+
 
 *** Investments in transport capacity
 
