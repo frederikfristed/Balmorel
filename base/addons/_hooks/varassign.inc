@@ -7,4 +7,4 @@ $ifi %HYDROGEN%==yes       $include   "../../base/addons/hydrogen/bb4/hydrogen_v
 $ifi %OPTIFLOW%==yes       $include   "../../base/addons/optiflow/bb4/optiflow_varassign.inc";
 $ifi %OFFSHOREGRID%==yes  $include   "../../base/addons/offshoregrid/bb4/offshoregrid_varassign.inc";
 
-$ifi %KPOTGUARD%==yes  $include   "../../base/addons/kpotguard/kpotguard_varassign.inc";
+$include   "../../base/addons/kpotguard/kpotguard_varassign.inc";
