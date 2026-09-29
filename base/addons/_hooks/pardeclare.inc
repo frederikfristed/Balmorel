@@ -34,4 +34,6 @@ $ifi %ANC_SERV%==yes  $include   "../../base/addons/ancilliary_services/ancillia
 $ifi %CCS%==yes  $include   "../../base/addons/CCS/bb4/CCS_pardeclare.inc";
 $ifi %INDIVUSERS%==yes       $include   "../../base/addons/indivusers/bb4/indivusers_pardeclare.inc";
 
+$ifi %KPOTGUARD%==yes  $include   "../../base/addons/kpotguard/kpotguard_pardeclare.inc";
+
 $label endoffile
