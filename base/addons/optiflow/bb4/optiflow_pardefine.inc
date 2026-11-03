@@ -211,6 +211,12 @@ SET ITRANSFROMTOPROC(PROC,IAAAE,IAAAI)	"Set of areas that are connected for tran
 ITRANSFROMTOPROC(PROC,IAE,IAI)$(TRANSDIST(PROC,IAE,IAI)) = YES;
 ITRANSFROMTOPROC(PROC,IA,IA) = NO;
 
+* Share of link cost booked on each direction. Two-way links book 0.5 per direction;
+* one-way links (e.g. onshore to offshore storage) book the full cost on the single direction.
+* Ported from navigating_maritime_transition_pathways 23dbd93.
+PARAMETER ITRANSCOSTSHARE(PROC,IAAAE,IAAAI) "Share of transport link cost booked on this direction (-)";
+ITRANSCOSTSHARE(PROC,IAE,IAI)$ITRANSFROMTOPROC(PROC,IAE,IAI) = 1 - 0.5$ITRANSFROMTOPROC(PROC,IAI,IAE);
+
 
 *** Investments in transport capacity
 
