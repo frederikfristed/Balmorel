@@ -62,6 +62,12 @@ ICO2_CC('OCC_35','CO2_FLOW') = YES;
 ICO2_CC('OCC_40','CO2_FLOW') = YES;
 ICO2_CC('OCC_45','CO2_FLOW') = YES;
 ICO2_CC('OCC_50','CO2_FLOW') = YES;
+*** LNG OCC chain (85% capture of LNG CO2; the OCC_xx chain above captures 70% of diesel-type CO2)
+ICO2_CC('OCC_LNG_30','CO2_FLOW') = YES;
+ICO2_CC('OCC_LNG_35','CO2_FLOW') = YES;
+ICO2_CC('OCC_LNG_40','CO2_FLOW') = YES;
+ICO2_CC('OCC_LNG_45','CO2_FLOW') = YES;
+ICO2_CC('OCC_LNG_50','CO2_FLOW') = YES;
 
 
 *** Re-adding CO2 used for utilisation in OptiFlow
