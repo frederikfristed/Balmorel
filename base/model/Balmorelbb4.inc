@@ -2263,9 +2263,9 @@ QLIMNOXC(IY411,C,GROUP)$(EMI_POL(IY411,C,GROUP,'LIM_NOX') AND (EMI_POL(IY411,C,G
 
 * "Limit on annual CO2-emission by year and group (aggregated countries) (ton)"
 QLIMCO2NA(IY411,GROUP)$(EMI_POLNA(IY411,GROUP,'LIM_CO2') AND (EMI_POLNA(IY411,GROUP,'LIM_CO2') LT INF))..
-      SUM(C,
-         SUM((IA,G)$(IAGK_HASORPOT(IY411,IA,G) AND ICA(C,IA) AND GROUP_AAA(GROUP,IA)), SUM((IS3,T), IHOURSINST(IS3,T)*IHOURFRAC * (IM_CO2(G) * IOF0001) * IOF3P6 * VGF_T(IY411,IA,G,IS3,T)))
-         )
+* Outer SUM(C)/ICA removed: each area in IA belongs to exactly one country, so the result is unchanged but generation is faster.
+* IM_CO2(G) filter skips zero terms. Ported from navigating_maritime_transition_pathways 2422525.
+      SUM((IA,G)$(GROUP_AAA(GROUP,IA) AND IAGK_HASORPOT(IY411,IA,G) AND IM_CO2(G)), SUM((IS3,T), IHOURSINST(IS3,T)*IHOURFRAC * (IM_CO2(G) * IOF0001) * IOF3P6 * VGF_T(IY411,IA,G,IS3,T)))
       =L= EMI_POLNA(IY411,GROUP,'LIM_CO2')
 $include "../../base/addons/_hooks/qlimco2na.inc"
 ;
