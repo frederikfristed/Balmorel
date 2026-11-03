@@ -6,3 +6,5 @@ $ifi %HEATTRANS%==yes       $include   "../../base/addons/heattrans/bb4/heattran
 $ifi %HYDROGEN%==yes       $include   "../../base/addons/hydrogen/bb4/hydrogen_varassign.inc";
 $ifi %OPTIFLOW%==yes       $include   "../../base/addons/optiflow/bb4/optiflow_varassign.inc";
 $ifi %OFFSHOREGRID%==yes  $include   "../../base/addons/offshoregrid/bb4/offshoregrid_varassign.inc";
+* kpotguard: BB4 only (the hook is also included from bb123.sim, where IY411FIRST does not exist)
+$ifi %KPOTGUARD%==yes $ifi %BB4%==yes  $include   "../../base/addons/kpotguard/kpotguard_varassign.inc";
