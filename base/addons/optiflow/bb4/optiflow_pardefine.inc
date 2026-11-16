@@ -473,6 +473,19 @@ SET TECH_GROUP_AS_PROC(PROC);
 TECH_GROUP_AS_PROC(PROC) = YES$(SUM(TECH_GROUP$(SAMEAS(PROC,TECH_GROUP)),1));
 %semislash%;
 
+*--- Capacity growth restrictions by Technology Group (OptiFlow) ---------------
+* Mirrors EXPANSION_RENEWABLE / QEXPANSION_RENEWABLE for OptiFlow process investments.
+* Same GROWTHMODE switch (Y_FIRST_CAP / Y_LIN_ADD / Y_EXP_ADD) and the same per-region
+* structure; the unit is the process capacity unit (U/h), not MW, and the processes of a
+* group are found through PROCTECHTYPE instead of GDATA(G,'GDTECHGROUP').
+PARAMETER EXPANSION_OPTIFLOW(YYY,RRR,TECH_GROUP,GROWTHMODE)    "Expansion rates for OptiFlow technologies (U/h)"   %semislash%
+$if     EXIST '../data/OPTIFLOW_EXPANSION.inc' $INCLUDE      '../data/OPTIFLOW_EXPANSION.inc';
+$if not EXIST '../data/OPTIFLOW_EXPANSION.inc' $INCLUDE '../../base/data/OPTIFLOW_EXPANSION.inc';
+
+PARAMETER IPREV_VPROCKAPNEW_SUM(YYY,RRR,TECH_GROUP) "Previous model-year grouped OptiFlow investments used for expansion regime gating (U/h)";
+*--- End of capacity growth restrictions by Technology Group (OptiFlow) --------
+
+
 SET FLOWFROMTOPROC(YYY,AAA,IPROCFROM,IPROCTO,FLOW) "FLOW from PROC (index 2) to PROC (index 3)" %semislash%
 $if     EXIST '../data/OPTIFLOW_FLOWFROMTOPROC.inc' $INCLUDE         '../data/OPTIFLOW_FLOWFROMTOPROC.inc';
 $if not EXIST '../data/OPTIFLOW_FLOWFROMTOPROC.inc' $INCLUDE '../../base/data/OPTIFLOW_FLOWFROMTOPROC.inc';

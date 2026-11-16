@@ -36,6 +36,7 @@ $ifi %inv%==yes       QSTOVOLTLIM
 $ifi %inv%==yes       QPROCKAUP_SCALE1
 $ifi %inv%==yes       QPROCKAUP_SCALE2
 $ifi %inv%==yes       QPROCKAP_DEC
+$ifi %inv%==yes       QEXPANSION_OPTIFLOW
 
 *** Investments in transport capacity
 $ifi %inv%==yes       QPROCEXIMKAPACCUMNET

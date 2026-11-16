@@ -55,6 +55,7 @@ $ifi %inv%==yes  EQUATION QPROCKAP_UP(Y,AAA,IPROCFROM,IPROCTO,FLOW,S,T)         
 $ifi %inv%==yes  EQUATION QPROCKAUP_SCALE1(Y,AAA,PROC)   "Equation for modelling economy of scale of new investments" ;
 $ifi %inv%==yes  EQUATION QPROCKAUP_SCALE2(Y,AAA,PROC)   "Equation for modelling economy of scale of new investments"  ;
 $ifi %inv%==yes  EQUATION QPROCKAP_DEC(Y,AAA,IPROCFROM,IPROCTO,FLOW,S,T) "Equation for modelling of decomissioning plants";
+$ifi %inv%==yes  EQUATION QEXPANSION_OPTIFLOW(Y,RRR,TECH_GROUP)   'Expansion rates for OptiFlow technologies (U/h)';
 
 *** Investment in transport capacity
 $ifi %inv%==yes  EQUATION QPROCEXIMKAPACCUMNET          'Accumulate PROCEXIM capacity over investment years'
@@ -475,6 +476,63 @@ QPROCKAP_UP(IY411,IA,IPROCFROM,IPROCTO,FLOW,S,T)$(
 
 * Put a cap on investments per technology and model period, if a cap is specified
 VPROCKAPNEW.UP(Y,IA,IPROC)$(VPROCKAPMAXINV(Y,IA,IPROC)) = (VPROCKAPMAXINV(Y,IA,IPROC)) ;
+
+*--- Capacity growth restrictions by Technology Group -------------------------
+* OptiFlow counterpart of QEXPANSION_RENEWABLE (Balmorelbb4.inc). Same three-way
+* GROWTHMODE switch on EXPANSION_OPTIFLOW, same regions, same first-year fallback.
+* Differences, all forced by OptiFlow's data model:
+*   - processes of a group come from PROCTECHTYPE, not GDATA(G,'GDTECHGROUP');
+*   - the left-hand side is VPROCKAPNEW in U/h, not VGKN in MW;
+*   - there is no SUBTECHGROUPKPOT gate. Saturation for these technologies sits
+*     downstream (e.g. the CO2_Seq_Buffer bound caps the DAC-to-storage chain),
+*     so the equation exists wherever EXPANSION_OPTIFLOW has data.
+
+$ifi not %inv%==yes $goto NO_OPTIFLOW_EXPANSION
+
+QEXPANSION_OPTIFLOW(IY411,IR,TECH_GROUP)$
+  (SUM(GROWTHMODE, EXPANSION_OPTIFLOW(IY411,IR,TECH_GROUP,GROWTHMODE)) > 0) ..
+
+*Sum additional allowed investments by technology group across the region's OptiFlow areas
+    SUM(
+      (IA,PROC)$(
+          RRRAAA(IR,IA)
+          AND AAAOPTIFLOW(IA)
+          AND PROCTECHTYPE(PROC,TECH_GROUP)
+          AND IAPROCKAPNEW(IY411,IA,PROC)
+      ),
+      VPROCKAPNEW(IY411,IA,PROC)
+    )
+    =L=
+
+*First model year --> Fixed investment limit
+  EXPANSION_OPTIFLOW(IY411,IR,TECH_GROUP,'Y_FIRST_CAP')
+    $((SUM(IY402$IY411PREVY(IY411,IY402), 1) EQ 0)
+      OR
+      (IPREV_VPROCKAPNEW_SUM(IY411,IR,TECH_GROUP) EQ 0)) +
+
+*Subsequent model year (linear growth)
+      EXPANSION_OPTIFLOW(IY411,IR,TECH_GROUP,'Y_LIN_ADD')
+        $((SUM(IY402$IY411PREVY(IY411,IY402), 1) GT 0)
+          AND (IPREV_VPROCKAPNEW_SUM(IY411,IR,TECH_GROUP) GT 0)
+          AND EXPANSION_OPTIFLOW(IY411,IR,TECH_GROUP,'Y_LIN_ADD')) *
+          (YVALUE(IY411) - SUM(Y$IY411PREVY(IY411,Y), YVALUE(Y))) +
+
+*Subsequent model year (exponential growth)
+    (IPREV_VPROCKAPNEW_SUM(IY411,IR,TECH_GROUP)
+      * (
+        POWER(
+          1 + EXPANSION_OPTIFLOW(IY411,IR,TECH_GROUP,'Y_EXP_ADD'),
+          YVALUE(IY411) - SUM(IY402$IY411PREVY(IY411,IY402), YVALUE(IY402))
+        ) - 1
+      ))
+    $((SUM(IY402$IY411PREVY(IY411,IY402), 1) GT 0)
+      AND (IPREV_VPROCKAPNEW_SUM(IY411,IR,TECH_GROUP) GT 0)
+      AND EXPANSION_OPTIFLOW(IY411,IR,TECH_GROUP,'Y_EXP_ADD'))
+;
+
+$label NO_OPTIFLOW_EXPANSION
+
+*--- End of capacity growth restrictions by Technology Group -------------------
 
 
 *** Investments in transport capacity
