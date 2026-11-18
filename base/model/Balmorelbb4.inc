@@ -629,7 +629,7 @@ PARAMETER IINVYEARG_LEFT(Y,Y,G)      "Remaining years of the lifetime of G of an
 PARAMETER IINVYEARX_LEFT(Y,Y)        "Remaining years of the lifetime of a transmission line investment made in Y (first index) at the beggining of Y (second index) (years)";
 PARAMETER IN_INV_G(Y,G)              "Number of investments made OF G within Y (fraction)";
 PARAMETER IN_INV_X(Y)                "Number of investments made OF a transmission line within Y (fraction)";
-PARAMETER IPREV_VGKN_SUM(Y,RRR,TECH_GROUP) "Previous model-year grouped investments used for expansion regime gating (MW)";
+PARAMETER IPREV_VGKN_SUM(Y,RRR,TECH_GROUP) "Installed capacity by region and tech group at the end of the previous model year, used by QEXPANSION_RENEWABLE (MW)";
 
 
 *------------ Calculation of IYHASANNUITYG and IYHASANNUITYX to include/exclude the payment of the annuities---------------------
@@ -2142,36 +2142,30 @@ QEXPANSION_RENEWABLE(IY411,IR,TECH_GROUP)$
     )
     =L=
 
-*First model year --> Fixed investment limit
+*IPREV_VGKN_SUM = installed capacity of the tech group in the region at the end of the previous
+*model year (Balmorelbb4.sim). Same structure as QEXPANSION_OPTIFLOW.
+
+*Start-up limit: first model year, or no capacity installed yet
   EXPANSION_RENEWABLE(IY411,IR,TECH_GROUP,'Y_FIRST_CAP')
     $((SUM(IY402$IY411PREVY(IY411,IY402), 1) EQ 0)
       OR
       (IPREV_VGKN_SUM(IY411,IR,TECH_GROUP) EQ 0)) +
 
-*Subsequent model year (linear growth)
+*Subsequent model year, linear term: Y_LIN_ADD per year of the step
       EXPANSION_RENEWABLE(IY411,IR,TECH_GROUP,'Y_LIN_ADD')
         $((SUM(IY402$IY411PREVY(IY411,IY402), 1) GT 0)
           AND (IPREV_VGKN_SUM(IY411,IR,TECH_GROUP) GT 0)
           AND EXPANSION_RENEWABLE(IY411,IR,TECH_GROUP,'Y_LIN_ADD')) *
           (YVALUE(IY411) - SUM(Y$IY411PREVY(IY411,Y), YVALUE(Y))) +
 
-*Subsequent model year (exponential growth)
-    SUM(IY402$IY411PREVY(IY411,IY402),
-      SUM(
-        IAGK_HASORPOT(IY402,IA,G)$(
-          RRRAAA(IR,IA)
-          AND IAGKNY(IY402,IA,G)
-          AND GDATA(G,'GDTECHGROUP') EQ TECH_GROUP_VALUE(TECH_GROUP)
-        ),
-        VGKN(IY402,IA,G)
-      )
+*Subsequent model year, exponential term: installed capacity grows at Y_EXP_ADD per year of the step
+    (IPREV_VGKN_SUM(IY411,IR,TECH_GROUP)
       * (
         POWER(
           1 + EXPANSION_RENEWABLE(IY411,IR,TECH_GROUP,'Y_EXP_ADD'),
-          YVALUE(IY411) - YVALUE(IY402)
+          YVALUE(IY411) - SUM(IY402$IY411PREVY(IY411,IY402), YVALUE(IY402))
         ) - 1
-      )
-    )
+      ))
     $((SUM(IY402$IY411PREVY(IY411,IY402), 1) GT 0)
       AND (IPREV_VGKN_SUM(IY411,IR,TECH_GROUP) GT 0)
       AND EXPANSION_RENEWABLE(IY411,IR,TECH_GROUP,'Y_EXP_ADD'))

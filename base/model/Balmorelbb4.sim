@@ -23,6 +23,9 @@ IS3_ONLYNEXT(S)=YES;
 
 VGKN.L(Y,IA,G)        = 0;
 VXKN.l(Y,IR,IRI)      = 0;
+* Read by the QEXPANSION_RENEWABLE helper (IPREV_VGKN_SUM) before the first solve
+VGKNACCUMNET.L(Y,IA,G) = 0;
+$ifi %DECOM%==yes VDECOM_EXO_ACCUM.L(Y,IA,G) = 0;
 
 IY411PREVY(Y,Y-1)= YES;
 
@@ -249,15 +252,21 @@ $ifi %RollingSeasons%==yes * Redefinition of IHOURSINT for the current set of se
 $ifi %RollingSeasons%==yes IWEIGHSUMS=SUM(IS3, WEIGHT_S(IS3));
 $ifi %RollingSeasons%==yes IHOURSINST(IS3,T)=IOF8760*WEIGHT_S(IS3)*WEIGHT_T(T)/(IWEIGHSUMS*SUM(ITALIAS, WEIGHT_T(ITALIAS)))/IHOURFRAC;
 
-* Helper for QEXPANSION_RENEWABLE: grouped investments in previous modeled year.
+* Helper for QEXPANSION_RENEWABLE: installed capacity of the tech group in the region at the end
+* of the previous model year = existing (GKFX, net of exogenous decommissioning) + accumulated
+* endogenous capacity. Both are fixed by the previous solve, so this is a constant here.
 IPREV_VGKN_SUM(Y,IR,TECH_GROUP) = 0;
 IPREV_VGKN_SUM(IY411,IR,TECH_GROUP) =
-  SUM((IY402,IA,G)$(
-      IY411PREVY(IY411,IY402)
-      AND RRRAAA(IR,IA)
-      AND IAGKNY(IY402,IA,G)
-      AND GDATA(G,'GDTECHGROUP') EQ TECH_GROUP_VALUE(TECH_GROUP)
-    ), VGKN.L(IY402,IA,G));
+  SUM(IY402$IY411PREVY(IY411,IY402),
+    SUM((IA,G)$(IAGKFX(IY402,IA,G) AND RRRAAA(IR,IA)
+                AND GDATA(G,'GDTECHGROUP') EQ TECH_GROUP_VALUE(TECH_GROUP)),
+      GKFX(IY402,IA,G)
+$ifi %DECOM%==yes  - VDECOM_EXO_ACCUM.L(IY402,IA,G)$IGDECOMEXOPOT(IY402,IA,G)
+    )
+    + SUM((IA,G)$(RRRAAA(IR,IA)
+                  AND SUM(Y$(YVALUE(Y) LE YVALUE(IY402)), IAGKNY(Y,IA,G))
+                  AND GDATA(G,'GDTECHGROUP') EQ TECH_GROUP_VALUE(TECH_GROUP)),
+      VGKNACCUMNET.L(IY402,IA,G)));
 
 *-------------------------------------------------------------------------------
 * SOLVE

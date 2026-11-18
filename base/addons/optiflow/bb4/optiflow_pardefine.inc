@@ -482,7 +482,7 @@ PARAMETER EXPANSION_OPTIFLOW(YYY,RRR,TECH_GROUP,GROWTHMODE)    "Expansion rates 
 $if     EXIST '../data/OPTIFLOW_EXPANSION.inc' $INCLUDE      '../data/OPTIFLOW_EXPANSION.inc';
 $if not EXIST '../data/OPTIFLOW_EXPANSION.inc' $INCLUDE '../../base/data/OPTIFLOW_EXPANSION.inc';
 
-PARAMETER IPREV_VPROCKAPNEW_SUM(YYY,RRR,TECH_GROUP) "Previous model-year grouped OptiFlow investments used for expansion regime gating (U/h)";
+PARAMETER IPREV_VPROCKAPNEW_SUM(YYY,RRR,TECH_GROUP) "Installed OptiFlow capacity by region and tech group at the end of the previous model year, used by QEXPANSION_OPTIFLOW (U/h)";
 *--- End of capacity growth restrictions by Technology Group (OptiFlow) --------
 
 
