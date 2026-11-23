@@ -529,7 +529,12 @@ $ifi %maritime_carbon_budget%==yes   SUM((IA,IFLOWIN,S,T)$AAAOPTIFLOW(IA),
 $ifi %maritime_carbon_budget%==yes       (  VFLOWSINK(IY411,IA,'CO2_Sink',IFLOWIN,S,T)$IENTERPROC(IY411,IA,'CO2_Sink',IFLOWIN)
 $ifi %maritime_carbon_budget%==yes        - VFLOWSINK(IY411,IA,'CO2_Neg_Sink',IFLOWIN,S,T)$IENTERPROC(IY411,IA,'CO2_Neg_Sink',IFLOWIN)
 $ifi %maritime_carbon_budget%==yes       ) * IHOURSINST(S,T)
-$ifi %maritime_carbon_budget%==yes   ) =L= EMI_POLNA_MARITIME(IY411,'LIM_CO2');
+$ifi %maritime_carbon_budget%==yes   )
+* OCC CO2 is credited at capture and re-added when used for fuel synthesis (CO2_CU)
+$ifi %maritime_carbon_budget%==yes + SUM((IA,S,T)$(AAAOPTIFLOW(IA) AND FLOWFROMTOPROC(IY411,IA,'CO2_Grid','CO2_CU','CO2_FLOW_OCC')),
+$ifi %maritime_carbon_budget%==yes       VFLOW(IY411,IA,'CO2_Grid','CO2_CU','CO2_FLOW_OCC',S,T) * IHOURSINST(S,T)
+$ifi %maritime_carbon_budget%==yes   )
+$ifi %maritime_carbon_budget%==yes   =L= EMI_POLNA_MARITIME(IY411,'LIM_CO2');
 
 
 
