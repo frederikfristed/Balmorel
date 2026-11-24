@@ -534,6 +534,17 @@ $ifi %maritime_carbon_budget%==yes   )
 $ifi %maritime_carbon_budget%==yes + SUM((IA,S,T)$(AAAOPTIFLOW(IA) AND FLOWFROMTOPROC(IY411,IA,'CO2_Grid','CO2_CU','CO2_FLOW_OCC')),
 $ifi %maritime_carbon_budget%==yes       VFLOW(IY411,IA,'CO2_Grid','CO2_CU','CO2_FLOW_OCC',S,T) * IHOURSINST(S,T)
 $ifi %maritime_carbon_budget%==yes   )
+* Biogas leakage counts in the maritime budget only for LBG: removed at the biogas plants, charged on the methane entering liquefaction
+* Leakage 0.0062083333 t CO2e/GJ biogas (1% CH4). Per GJ methane: upgraded / 0.9905 = 0.006267878176005; methanated / 1.674 = 0.003708681800080
+$ifi %maritime_carbon_budget%==yes + 0.006267878176005 * SUM((IA,IPROCFROM,IPROCTO,S,T)$(AAAOPTIFLOW(IA) AND FLOWFROMTOPROC(IY411,IA,IPROCFROM,IPROCTO,'SNG_FLOW') AND PROCTECHTYPE(IPROCFROM,'Biogas_Upgrading_Y') AND PROCTECHTYPE(IPROCTO,'Biogas_Liquefaction_Y')),
+$ifi %maritime_carbon_budget%==yes       VFLOW(IY411,IA,IPROCFROM,IPROCTO,'SNG_FLOW',S,T) * IHOURSINST(S,T)
+$ifi %maritime_carbon_budget%==yes   )
+$ifi %maritime_carbon_budget%==yes + 0.003708681800080 * SUM((IA,IPROCFROM,IPROCTO,S,T)$(AAAOPTIFLOW(IA) AND FLOWFROMTOPROC(IY411,IA,IPROCFROM,IPROCTO,'SNG_FLOW') AND PROCTECHTYPE(IPROCFROM,'Methanation_Y') AND PROCTECHTYPE(IPROCTO,'Biogas_Liquefaction_Y')),
+$ifi %maritime_carbon_budget%==yes       VFLOW(IY411,IA,IPROCFROM,IPROCTO,'SNG_FLOW',S,T) * IHOURSINST(S,T)
+$ifi %maritime_carbon_budget%==yes   )
+$ifi %maritime_carbon_budget%==yes - SUM((IA,IPROCFROM,S,T)$(AAAOPTIFLOW(IA) AND (SAMEAS(IPROCFROM,'Biogas_Dry') OR SAMEAS(IPROCFROM,'Biogas_Wet')) AND FLOWFROMTOPROC(IY411,IA,IPROCFROM,'CO2_Sink','CO2PROC_FLOW')),
+$ifi %maritime_carbon_budget%==yes       VFLOW(IY411,IA,IPROCFROM,'CO2_Sink','CO2PROC_FLOW',S,T) * IHOURSINST(S,T)
+$ifi %maritime_carbon_budget%==yes   )
 $ifi %maritime_carbon_budget%==yes   =L= EMI_POLNA_MARITIME(IY411,'LIM_CO2');
 
 
