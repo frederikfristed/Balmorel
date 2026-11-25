@@ -67,4 +67,6 @@ $ifi %addUP%==yes VSTORAGEVOL.UP(Y,IA,PROCSTORAGE,FLOW,S,T)   = ILOUPBOUNDS;  !!
 $ifi %addUP%==yes VPROCKAPNEW.UP(Y,IA,PROC)                   = ILOUPBOUNDS;  !! May be overwritten by real data later
 
 
-VPROCKAPNEW.UP(Y,IA,PROC)$(APROCKAPNEW(Y,IA,PROC))=777777777777777;
+* No upper bound where new capacity is allowed: INF, not a large finite number, which barrier
+* would treat as a real bound (numerical difficulties without crossover).
+VPROCKAPNEW.UP(Y,IA,PROC)$(APROCKAPNEW(Y,IA,PROC))=INF;
