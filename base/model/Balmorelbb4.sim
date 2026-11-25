@@ -353,6 +353,9 @@ $ifi %printfiles%==yes $if errorfree $include "../../base/output/printout/printi
 * --- Prepare the next BB4 model -----------------------------------------------
 * ------------------------------------------------------------------------------
 
+* kpotguard: set barrier residues of the year just solved to zero before they are fixed
+$ifi %KPOTGUARD%==yes $include "../../base/addons/kpotguard/kpotguard_residue.inc";
+
 *Fixing the investments and accumulated investments from previous optimization for the next optimization (only the first year of IY411 is fixed)
 *(IMPORTANT!: The following code only works if the years are optimized consecutively. For example, this two-year mode optimization would not provide coherent results: [2020,2040] and [2030;2050]
 $ifi %TechInvest%==yes         LOOP(Y$(YVALUE(Y) LE YVALUE(IYALIAS)),VGKN.FX(Y,IA,G)$IAGKNY(Y,IA,G)= VGKN.L(Y,IA,G););

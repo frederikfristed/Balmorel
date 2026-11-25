@@ -93,10 +93,13 @@ $setglobal NETDEMAND
 *-------- END: QDENET  ---------
 
 *--------   KPOTGUARD  ---------
-* Guard for myopic runs solved by barrier without crossover. After each solve, raises
-* SUBTECHGROUPKPOT/TECHGROUPKPOT and caps accumulated exogenous decommissioning by the solver
-* residual (at most max(1 MW, 0.01%)), so fixed capacities cannot make the next year infeasible.
-* Adjustments are displayed in the .lst (IKPOTGUARD_SUB, _TG, _DEC; too-large excesses in _BIG).
+* Guard for myopic runs solved by barrier without crossover. After each solve:
+* 1. Investment and endogenous decommissioning levels below 1 MW (barrier residues) are set to 0
+*    before they are fixed, and accumulated levels below 1E-6 are rounded to 0 (kpotguard_residue.inc).
+* 2. SUBTECHGROUPKPOT/TECHGROUPKPOT are raised and accumulated exogenous decommissioning is capped by
+*    the solver residual (at most max(1 MW, 0.01%)), so fixed capacities cannot make the next year
+*    infeasible (kpotguard_varassign.inc).
+* Changes are displayed in the .lst (IKPOTGUARD_RES; IKPOTGUARD_SUB, _TG, _DEC; too-large excesses in _BIG).
 * Ported from navigating_maritime_transition_pathways dc569e5.
 $setglobal KPOTGUARD yes
 *!option yes

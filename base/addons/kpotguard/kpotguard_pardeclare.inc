@@ -12,3 +12,11 @@ PARAMETER IKPOTGUARD_DEC(YYY,AAA,GGG) "Accumulated exogenous decommissioning cap
 SCALAR    IKPOTGUARD_ATOL "Largest absolute excess treated as solver residual (MW)" /1/;
 SCALAR    IKPOTGUARD_RTOL "Largest relative excess treated as solver residual (-)"  /1E-4/;
 PARAMETER IKPOTGUARD_DECL(AAA,GGG) "Accumulated exogenous decommissioning of the year just solved, 0 without DECOM (MW)";
+
+* Residue guard (see kpotguard_residue.inc)
+SCALAR    IKPOTGUARD_ROUNDOFF "Accumulated levels below this (absolute) are set to 0 before fixing (MW or process units)" /1E-6/;
+PARAMETER IKPOTGUARD_RES(YYY,*) "Residues set to 0 after year YYY: counts (_N) and sums (_SUM, MW or process units)";
+PARAMETER IKPOTGUARD_RG(AAA,GGG)      "Residue of the year just solved, generation investment or decommissioning (MW)";
+PARAMETER IKPOTGUARD_RX(IRRRE,IRRRI)  "Residue of the year just solved, electricity or hydrogen transmission investment (MW)";
+PARAMETER IKPOTGUARD_RP(AAA,*)        "Residue of the year just solved, OptiFlow process capacity investment (process units)";
+PARAMETER IKPOTGUARD_RT(AAA,AAA,*)    "Residue of the year just solved, OptiFlow transport capacity investment (process units)";
