@@ -459,11 +459,11 @@ $setglobal LIFETIME_DECOM_ENDO_G YES
 *!option yes
 
 * Adds Endogenous capacities can be decommissioned based on their profitability:
-$setglobal ECONOMIC_DECOM_ENDO_G   yes
+$setglobal ECONOMIC_DECOM_ENDO_G
 *!option yes
 
 * Adds Endogenous decommissioned endogenous capacities can be brought back to the energy system. To be combined with the other decommissioning options:
-$setglobal REVERT_DECOM_ENDO_G   yes
+$setglobal REVERT_DECOM_ENDO_G
 *!option yes
 
 *--------END OF ENDOGENOUS CAPACITIES-----
