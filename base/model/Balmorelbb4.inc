@@ -630,6 +630,7 @@ PARAMETER IINVYEARX_LEFT(Y,Y)        "Remaining years of the lifetime of a trans
 PARAMETER IN_INV_G(Y,G)              "Number of investments made OF G within Y (fraction)";
 PARAMETER IN_INV_X(Y)                "Number of investments made OF a transmission line within Y (fraction)";
 PARAMETER IPREV_VGKN_SUM(Y,RRR,TECH_GROUP) "Installed capacity by region and tech group at the end of the previous model year, used by QEXPANSION_RENEWABLE (MW)";
+PARAMETER IVRE_ADD(Y,RRR,TECH_GROUP,*) "Allowed new capacity by region and tech group after the first model year, used by QEXPANSION_RENEWABLE: LIN, EXP, GROWTH, REPLACE, TOTAL (MW)";
 
 
 *------------ Calculation of IYHASANNUITYG and IYHASANNUITYX to include/exclude the payment of the annuities---------------------
@@ -2151,25 +2152,9 @@ QEXPANSION_RENEWABLE(IY411,IR,TECH_GROUP)$
       OR
       (IPREV_VGKN_SUM(IY411,IR,TECH_GROUP) EQ 0)) +
 
-*Subsequent model year, linear term: Y_LIN_ADD per year of the step
-      EXPANSION_RENEWABLE(IY411,IR,TECH_GROUP,'Y_LIN_ADD')
-        $((SUM(IY402$IY411PREVY(IY411,IY402), 1) GT 0)
-          AND (IPREV_VGKN_SUM(IY411,IR,TECH_GROUP) GT 0)
-          AND EXPANSION_RENEWABLE(IY411,IR,TECH_GROUP,'Y_LIN_ADD')) *
-          (YVALUE(IY411) - SUM(Y$IY411PREVY(IY411,Y), YVALUE(Y))) +
-
-*Subsequent model year, exponential term: installed capacity grows at Y_EXP_ADD per year of the step
-    (IPREV_VGKN_SUM(IY411,IR,TECH_GROUP)
-      * (
-        POWER(
-          1 + EXPANSION_RENEWABLE(IY411,IR,TECH_GROUP,'Y_EXP_ADD'),
-          YVALUE(IY411) - SUM(IY402$IY411PREVY(IY411,IY402), YVALUE(IY402))
-        ) - 1
-      ))
-    $((SUM(IY402$IY411PREVY(IY411,IY402), 1) GT 0)
-      AND (IPREV_VGKN_SUM(IY411,IR,TECH_GROUP) GT 0)
-      AND EXPANSION_RENEWABLE(IY411,IR,TECH_GROUP,'Y_EXP_ADD'))
-
+*Subsequent model year: growth allowance (linear and exponential terms combined by Y_EXP_WEIGHT)
+*plus replacement of the lifetime decommissioning in the step (Balmorelbb4.sim, IVRE_ADD)
+  IVRE_ADD(IY411,IR,TECH_GROUP,'TOTAL')
 ;
 
 

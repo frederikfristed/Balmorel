@@ -461,7 +461,7 @@ $if not EXIST '../data/SUBTECHGROUPKPOT.inc' $INCLUDE '../../base/data/SUBTECHGR
 $include "../../base/addons/_hooks/subtechgroupkpotadditions.inc"
 
 
-SET GROWTHMODE /Y_FIRST_CAP, Y_LIN_ADD, Y_EXP_ADD/;
+SET GROWTHMODE /Y_FIRST_CAP, Y_LIN_ADD, Y_EXP_ADD, Y_EXP_WEIGHT/;
 
 PARAMETER EXPANSION_RENEWABLE (YYY,RRR,TECH_GROUP,GROWTHMODE)    "Expansion rates for renewable technologies (MW)"   %semislash%
 $if     EXIST '../data/EXPANSION_RENEWABLE.inc' $INCLUDE      '../data/EXPANSION_RENEWABLE.inc';
