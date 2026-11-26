@@ -485,6 +485,14 @@ $if not EXIST '../data/OPTIFLOW_EXPANSION.inc' $INCLUDE '../../base/data/OPTIFLO
 PARAMETER IPREV_VPROCKAPNEW_SUM(YYY,RRR,TECH_GROUP) "Installed OptiFlow capacity by region and tech group at the end of the previous model year, used by QEXPANSION_OPTIFLOW (U/h)";
 *--- End of capacity growth restrictions by Technology Group (OptiFlow) --------
 
+*--- Europe-wide budget on new CO2 storage injection capacity -----------------
+* One linear allowance per year after the commitment year (Y_LIN_ADD, tCO2/h per year),
+* used by QEXPANSION_CO2STORAGE, as EXPANSION_XK / EXPANSION_XH2K for transmission.
+PARAMETER EXPANSION_CO2STORAGE(YYY,GROWTHMODE)    "Europe-wide budget on new CO2 storage injection capacity (tCO2/h per year)"   %semislash%
+$if     EXIST '../data/OPTIFLOW_EXPANSION_CO2STORAGE.inc' $INCLUDE      '../data/OPTIFLOW_EXPANSION_CO2STORAGE.inc';
+$if not EXIST '../data/OPTIFLOW_EXPANSION_CO2STORAGE.inc' $INCLUDE '../../base/data/OPTIFLOW_EXPANSION_CO2STORAGE.inc';
+
+
 
 SET FLOWFROMTOPROC(YYY,AAA,IPROCFROM,IPROCTO,FLOW) "FLOW from PROC (index 2) to PROC (index 3)" %semislash%
 $if     EXIST '../data/OPTIFLOW_FLOWFROMTOPROC.inc' $INCLUDE         '../data/OPTIFLOW_FLOWFROMTOPROC.inc';

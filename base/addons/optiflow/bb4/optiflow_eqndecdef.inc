@@ -56,6 +56,7 @@ $ifi %inv%==yes  EQUATION QPROCKAUP_SCALE1(Y,AAA,PROC)   "Equation for modelling
 $ifi %inv%==yes  EQUATION QPROCKAUP_SCALE2(Y,AAA,PROC)   "Equation for modelling economy of scale of new investments"  ;
 $ifi %inv%==yes  EQUATION QPROCKAP_DEC(Y,AAA,IPROCFROM,IPROCTO,FLOW,S,T) "Equation for modelling of decomissioning plants";
 $ifi %inv%==yes  EQUATION QEXPANSION_OPTIFLOW(Y,RRR,TECH_GROUP)   'Expansion rates for OptiFlow technologies (U/h)';
+$ifi %inv%==yes  EQUATION QEXPANSION_CO2STORAGE(Y)   'Europe-wide budget on new CO2 storage injection capacity (tCO2/h)';
 
 *** Investment in transport capacity
 $ifi %inv%==yes  EQUATION QPROCEXIMKAPACCUMNET          'Accumulate PROCEXIM capacity over investment years'
@@ -528,6 +529,21 @@ QEXPANSION_OPTIFLOW(IY411,IR,TECH_GROUP)$
     $((SUM(IY402$IY411PREVY(IY411,IY402), 1) GT 0)
       AND (IPREV_VPROCKAPNEW_SUM(IY411,IR,TECH_GROUP) GT 0)
       AND EXPANSION_OPTIFLOW(IY411,IR,TECH_GROUP,'Y_EXP_ADD'))
+;
+
+*--- Europe-wide budget on new CO2 storage injection capacity -----------------
+* Storage counterpart of QEXPANSION_XK / QEXPANSION_XH2K: one linear allowance per
+* year of the model period, summed over all OptiFlow areas and all storage vintages
+* (tech groups Seq_On_Y and Seq_Off_Y). No growth term on installed capacity, so both
+* arms face the same allowance. Not in the first model year.
+
+QEXPANSION_CO2STORAGE(IY411)$(EXPANSION_CO2STORAGE(IY411,'Y_LIN_ADD') AND (NOT IYFIRST(IY411)))..
+    SUM((IA,PROC)$(AAAOPTIFLOW(IA)
+                   AND (PROCTECHTYPE(PROC,'Seq_On_Y') OR PROCTECHTYPE(PROC,'Seq_Off_Y'))
+                   AND IAPROCKAPNEW(IY411,IA,PROC)),
+        VPROCKAPNEW(IY411,IA,PROC))
+    =L=
+    EXPANSION_CO2STORAGE(IY411,'Y_LIN_ADD') * (YVALUE(IY411) - SUM(Y$IY411PREVY(IY411,Y), YVALUE(Y)))
 ;
 
 $label NO_OPTIFLOW_EXPANSION
