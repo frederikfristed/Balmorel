@@ -492,6 +492,11 @@ PARAMETER EXPANSION_CO2STORAGE(YYY,GROWTHMODE)    "Europe-wide budget on new CO2
 $if     EXIST '../data/OPTIFLOW_EXPANSION_CO2STORAGE.inc' $INCLUDE      '../data/OPTIFLOW_EXPANSION_CO2STORAGE.inc';
 $if not EXIST '../data/OPTIFLOW_EXPANSION_CO2STORAGE.inc' $INCLUDE '../../base/data/OPTIFLOW_EXPANSION_CO2STORAGE.inc';
 
+*--- Penalty on CO2 emissions above the cap QLIMCO2NA -------------------------
+* Emissions above EMI_POLNA LIM_CO2 are allowed at this cost (VCO2CAPSLACK); 0 = hard cap.
+SCALAR CO2CAP_PENALTY    "Cost of CO2 emissions above the cap QLIMCO2NA (EUR/t CO2)"   %semislash%
+$if     EXIST '../data/CO2CAP_PENALTY.inc' $INCLUDE      '../data/CO2CAP_PENALTY.inc';
+$if not EXIST '../data/CO2CAP_PENALTY.inc' $INCLUDE '../../base/data/CO2CAP_PENALTY.inc';
 
 
 SET FLOWFROMTOPROC(YYY,AAA,IPROCFROM,IPROCTO,FLOW) "FLOW from PROC (index 2) to PROC (index 3)" %semislash%

@@ -1,3 +1,6 @@
+* Emissions above the cap, priced at CO2CAP_PENALTY in the objective; only when a penalty is given.
++ VCO2CAPSLACK(IY411,GROUP)$CO2CAP_PENALTY
+
 * CCU in optiflow, requires CCS add-on.
 
 $ifi not %CCS%==yes $goto NOCCUS
