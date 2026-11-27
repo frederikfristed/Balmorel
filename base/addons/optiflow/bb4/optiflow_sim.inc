@@ -85,10 +85,10 @@ VFLOWBUFFER.FX(Y,IA,PROCBUFFER,FLOW,S,T)$((IENTERPROC(Y,IA,PROCBUFFER,FLOW) OR I
 
 
 * Helper for QEXPANSION_OPTIFLOW: installed capacity of the tech group in the region at the end
-* of the previous model year = all OptiFlow investments up to and including that year. Mirrors
-* IPREV_VGKN_SUM (Balmorelbb4.sim). VPROCKAPNEW of earlier model years is fixed by
-* optiflow_varassign.inc, so this is a constant by the time the equation is built.
-* Existing capacity (PROCKAPFX) is not counted: the tech groups using this equation (DAC) have none.
+* of the previous model year = existing capacity (PROCKAPFX) in that year plus all OptiFlow
+* investments up to and including that year. Mirrors IPREV_VGKN_SUM (Balmorelbb4.sim).
+* VPROCKAPNEW of earlier model years is fixed by optiflow_varassign.inc, so this is a constant
+* by the time the equation is built.
 $ifi not %inv%==yes $goto NO_OPTIFLOW_EXPANSION_SIM
 
 IPREV_VPROCKAPNEW_SUM(Y,IR,TECH_GROUP) = 0;
@@ -100,6 +100,12 @@ IPREV_VPROCKAPNEW_SUM(IY411,IR,TECH_GROUP) =
         AND AAAOPTIFLOW(IA)
         AND PROCTECHTYPE(PROC,TECH_GROUP)
         AND IAPROCKAPNEW(Y,IA,PROC)
-      ), VPROCKAPNEW.L(Y,IA,PROC)));
+      ), VPROCKAPNEW.L(Y,IA,PROC))
+  + SUM((IA,PROC,FLOW,IFLOWINOUT)$(
+        RRRAAA(IR,IA)
+        AND AAAOPTIFLOW(IA)
+        AND PROCTECHTYPE(PROC,TECH_GROUP)
+        AND PROCKAPDATA(IY402,PROC,FLOW,IFLOWINOUT)
+      ), PROCKAPFX(IY402,IA,PROC,FLOW,IFLOWINOUT)));
 
 $label NO_OPTIFLOW_EXPANSION_SIM
